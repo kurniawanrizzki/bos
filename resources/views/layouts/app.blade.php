@@ -14,6 +14,7 @@
     <link href="{{ asset('/assets/plugins/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/plugins/node-waves/waves.css') }}" rel="stylesheet" />
     <link href="{{ asset('/assets/plugins/animate-css/animate.css') }}" rel="stylesheet" />
+    <link href="{{ asset('/assets/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/themes/all-themes.css') }}" rel="stylesheet" />
   </head>
@@ -23,6 +24,15 @@
     <script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ asset('/assets/plugins/node-waves/waves.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-validation/jquery.validate.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datatable/jquery.dataTables.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/buttons.flash.min.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/jszip.min.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/buttons.print.min.js') }}"></script>
     <script src="{{ asset('/assets/js/admin.js') }}"></script>
     <script src="{{ asset('/assets/js/pages/examples/sign-in.js') }}"></script>
     <script type="text/javascript">
@@ -64,6 +74,37 @@
         });
 
       });
+
+      $('#transactions_tb').DataTable({
+        responsive : true,
+        processing : true,
+        serverSide : true,
+        ajax       : "{{ route('api.transactions') }}",
+        columns    : [
+          {'data':'TRANSACTION_NUMBER'},
+          {'data':'INVOICE_NUMBER'},
+          {'data':'TRANSACTION_DATE'},
+          {'data':'CUSTOMER_NAME','name':'CLIENT.CLIENT_NAME'},
+          {'data':'STATUS_HTML','searchable':false,'orderable':false},
+          {'data':'ACTION','searchable':false,'orderable':false}
+        ]
+      });
+
+      $('#items_tb').DataTable({
+        responsive : true,
+        processing : true,
+        serverSide : true,
+        ajax       : "{{ route('api.items') }}",
+        columns    : [
+          {'data':'ITEM_CODE'},
+          {'data':'ITEM_NAME'},
+          {'data':'ITEM_SIZE'},
+          {'data':'ITEM_STOCK'},
+          {'data':'PRICE'},
+          {'data':'ACTION','searchable':false,'orderable':false}
+        ]
+      });
+
     });
     </script>
   </body>

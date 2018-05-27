@@ -51,7 +51,12 @@
                               {{ trans('string.transaction_detail_component')[1] }}
                             </div>
                             <div class="col-md-8">
-                              {{ $transaction[0]->CUSTOMER_NAME }}
+                              <span>
+                                <i style="color:{{ ($transaction[0]->IS_TRANSFERED == 1)?'blue':'red' }}">{{ trans('string.transfered_status') }}</i> <strong>-</strong>
+                                <i style="color:{{ ($transaction[0]->IS_DELIVERED == 1)?'blue':'red' }}">{{ trans('string.delivered_status') }}</i> <strong>-</strong>
+                                <i style="color:{{ ($transaction[0]->IS_CANCELED == 1)?'blue':'red' }}">{{ trans('string.canceled_status') }}</i>
+
+                              </span>
                             </div>
                         </div>
                         <div class="row">
@@ -59,7 +64,7 @@
                               {{ trans('string.transaction_detail_component')[2] }}
                             </div>
                             <div class="col-md-8">
-                              {{ $transaction[0]->ADDRESS." - ".$transaction[0]->DISTRICT." - ".$transaction[0]->PROVINCE }}
+                              {{ $transaction[0]->CUSTOMER_NAME }}
                             </div>
                         </div>
                         <div class="row">
@@ -67,7 +72,7 @@
                               {{ trans('string.transaction_detail_component')[3] }}
                             </div>
                             <div class="col-md-8">
-                              {{ $transaction[0]->HP }}
+                              {{ $transaction[0]->ADDRESS." - ".$transaction[0]->DISTRICT." - ".$transaction[0]->PROVINCE }}
                             </div>
                         </div>
                         <div class="row">
@@ -75,12 +80,20 @@
                               {{ trans('string.transaction_detail_component')[4] }}
                             </div>
                             <div class="col-md-8">
-                              {{ $transaction[0]->TRANSACTION_NUMBER }}
+                              {{ $transaction[0]->HP }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-3">
                               {{ trans('string.transaction_detail_component')[5] }}
+                            </div>
+                            <div class="col-md-8">
+                              {{ $transaction[0]->TRANSACTION_NUMBER }}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                              {{ trans('string.transaction_detail_component')[6] }}
                             </div>
                             <div class="col-md-8">
                               @if ($transaction[0]->INVOICE_NUMBER != "")
@@ -94,7 +107,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-3">
-                              {{ trans('string.transaction_detail_component')[6] }}
+                              {{ trans('string.transaction_detail_component')[7] }}
                             </div>
                             <div class="col-md-8">
                               {{ $transaction[0]->TRANSACTION_DATE }}
@@ -102,7 +115,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-3">
-                              {{ trans('string.transaction_detail_component')[7] }}
+                              {{ trans('string.transaction_detail_component')[8] }}
                             </div>
                             <div class="col-md-8">
                               {{ \Config::get('app.applied_curency').number_format($transaction[0]->TOTAL, 2) }}
@@ -110,7 +123,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-3">
-                              {{ trans('string.transaction_detail_component')[8] }}
+                              {{ trans('string.transaction_detail_component')[9] }}
                             </div>
                             <div class="col-md-8">
                               {{ $transaction[0]->SHIPPING_TYPE }}
@@ -118,7 +131,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-3">
-                              {{ trans('string.transaction_detail_component')[9] }}
+                              {{ trans('string.transaction_detail_component')[10] }}
                             </div>
                             <div class="col-md-8">
                               {{ \Config::get('app.applied_curency').number_format($transaction[0]->SHIPPING_TOTAL, 2) }}

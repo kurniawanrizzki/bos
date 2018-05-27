@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Lang;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -11,14 +12,11 @@ use App\Models\Order;
 class TransactionController extends Controller
 {
     public function index () {
-      $transactions = $this->getAllList();
-      return view('pages.menu.transactions.index',[
-        'transactions'=>$transactions
-      ]);
+      return view('pages.menu.transactions.index');
     }
 
     public function view ($transactionId) {
-      $transactionById  = $this->getList($transactionId);
+      $transactionById  = $this->getList($transactionId)->get();
       $orderByTransactionId = $this->getOrdersDetail($transactionId);
       return view('pages.menu.transactions.view',[
         'transaction'=>$transactionById,
@@ -62,7 +60,7 @@ class TransactionController extends Controller
     }
 
     public function print ($transactionId) {
-      $transactionById  = $this->getList($transactionId);
+      $transactionById  = $this->getList($transactionId)->get();
       $orderByTransactionId = $this->getOrdersDetail($transactionId);
 
       if (sizeof($transactionById) > 0) {
@@ -92,6 +90,9 @@ class TransactionController extends Controller
                        "CLIENT.CLIENT_DISTRICTS as DISTRICT",
                        "CLIENT.CLIENT_PROVINCE as PROVINCE",
                        "CLIENT.CLIENT_HP as HP",
+                       "TRANSACTION.IS_DELIVERED",
+                       "TRANSACTION.IS_TRANSFERED",
+                       "TRANSACTION.IS_CANCELED",
                        \Illuminate\Support\Facades\DB::raw(
                           "(CASE ".
                             "WHEN ((TRANSACTION.IS_TRANSFERED = 1) && (TRANSACTION.IS_DELIVERED = 1) && (TRANSACTION.IS_CANCELED = 0)) THEN 4 ". //already delivered
@@ -111,11 +112,64 @@ class TransactionController extends Controller
                        ->where('TRANSACTION.TRANSACTION_ID','=',$transactionId);
         }
 
-        return $transactions->get();
+        return $transactions;
     }
 
-    protected function getAllList () {
-      return $this->getList(null);
+    public function getAllList () {
+      $transactions = $this->getList(null);
+      $search = Input::get('search.value');
+      if (!empty($search)) {
+          $filtered = "%".$search."%";
+          $transactions = $transactions->where("TRANSACTION.TRANSACTION_NUMBER","LIKE",$filtered)
+                          ->orWhere("TRANSACTION.INVOICE_NUMBER","LIKE",$filtered)
+                          ->orWhere("CLIENT.CLIENT_NAME","LIKE",$filtered);
+      }
+      return \DataTables::of($transactions)
+              ->addColumn('ACTION', function ($transactions){
+                return '<a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route("transaction.view",[$transactions->TRANSACTION_ID]).'"><i class="material-icons">search</i></a>
+                <a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route("transaction.print",[$transactions->TRANSACTION_ID]).'"><i class="material-icons">print</i></a>
+                <a class="btn bg-red btn-circle waves-effect waves-circle waves-float" href="'.route("transaction.delete",[$transactions->TRANSACTION_ID]).'"><i class="material-icons">delete</i></a>';
+              })
+              ->addColumn('STATUS_HTML', function($transactions){
+                $color = $transactions->STATUS == 4?'btn-success':
+                        ($transactions->STATUS == 3?btn-primary:
+                            (($transactions->STATUS == 2) || ($transactions->STATUS == 1)?'btn-danger':
+                            ($transactions->STATUS == 0?'btn-info':'btn-warning')));
+
+                $disabled = ($transactions->STATUS == 4) || ($transactions->STATUS == 2) || ($transactions->STATUS == 1)?'disabled':'';
+
+                $transactionLabel = null;
+
+                if ($transactions->STATUS == 4) {
+                    $transactionLabel = Lang::get('string.delivered_status');
+                } else if ($transactions->STATUS == 3) {
+                    $transactionLabel = Lang::get('string.transfered_status');
+                } else if ($transactions->STATUS == 2) {
+                    $transactionLabel = Lang::get('string.paid_canceled_status');
+                } else if ($transactions->STATUS == 1) {
+                    $transactionLabel = Lang::get('string.canceled_status');
+                } else if ($transactions->STATUS == 0) {
+                    $transactionLabel = Lang::get('string.waiting_status');
+                } else {
+                    $transactionLabel = Lang::get('string.unknown_status');
+                }
+
+                return '<td>
+                  <input type="hidden" name="_token" id="token" value="'.csrf_token().'">
+                  <input type="hidden" name="transaction_id" id="transaction_id" value="'.$transactions->TRANSACTION_ID.'">
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn waves-effect dropdown-toggle '.$color.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="bos-status" '.$disabled.' >'.$transactionLabel.'<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu bos-status-dropdown">
+                        <li><a class=" waves-effect waves-block">'.Lang::get('string.delivered_status').'</a></li>
+                        <li><a class=" waves-effect waves-block">'.Lang::get('string.transfered_status').'</a></li>
+                        <li><a class=" waves-effect waves-block">'.Lang::get('string.canceled_status').'</a></li>
+                    </ul>
+                  </div>
+                </td>';
+              })
+              ->rawColumns(["ACTION","STATUS_HTML"])
+              ->make();
     }
 
     protected function getOrdersDetail ($transactionId) {

@@ -40,7 +40,7 @@ return [
   'orders_table' => ['CODE','NAME','SIZE','PRICE','TOTAL ITEM','TOTAL PRICE'],
   'items_table' => ['CODE','NAME','SIZE','STOCK','PRICE','ACTION'],
   'transactions_table'=> ['TRANSACTION NUMBER','INVOICE NUMBER','DATE','CUSTOMER NAME','STATUS','ACTION'],
-  'transaction_detail_component' => ['STATUS','CUSTOMER NAME','CUSTOMER ADDRESS','CUSTOMER PHONE','TRANSACTION NUMBER','INVOICE NUMBER','DATE','TOTAL ORDER','SHIPPING TYPE','SHIPPING TOTAL'],
+  'transaction_detail_component' => ['STATUS','STATE STATUS','CUSTOMER NAME','CUSTOMER ADDRESS','CUSTOMER PHONE','TRANSACTION NUMBER','INVOICE NUMBER','DATE','TOTAL ORDER','SHIPPING TYPE','SHIPPING TOTAL'],
   'goto_detail_page' => "For the detail please go to <a href=' :url '> :title </a> page.",
   'delivered_status' => 'DELIVERED',
   'transfered_status' => 'TRANSFERED',
