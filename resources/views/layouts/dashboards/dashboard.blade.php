@@ -1,0 +1,9 @@
+@extends("layouts.app")
+@section("title")
+  @parent
+  @yield("dashboard.title")
+@endsection
+@section("content")
+  @yield("dashboard.sidebar")
+  @yield("dashboard.content")
+@endsection
