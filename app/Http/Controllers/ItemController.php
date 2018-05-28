@@ -50,9 +50,9 @@ class ItemController extends Controller
       return redirect()->route('item.index');
     }
 
-    public function getItemList () {
+    public function getItemList ($userId) {
         $search = Input::get('search.value');
-        $items = Item::where('USER_ID','=',$this->getUserId());
+        $items = Item::where('USER_ID','=',$userId);
 
         if (!empty($search)) {
           $filtered = "%".$search."%";

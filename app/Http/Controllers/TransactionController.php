@@ -16,7 +16,7 @@ class TransactionController extends Controller
     }
 
     public function view ($transactionId) {
-      $transactionById  = $this->getList($transactionId)->get();
+      $transactionById  = $this->getList($transactionId, $this->getUserId())->get();
       $orderByTransactionId = $this->getOrdersDetail($transactionId);
       return view('pages.menu.transactions.view',[
         'transaction'=>$transactionById,
@@ -60,7 +60,7 @@ class TransactionController extends Controller
     }
 
     public function print ($transactionId) {
-      $transactionById  = $this->getList($transactionId)->get();
+      $transactionById  = $this->getList($transactionId, $this->getUserId())->get();
       $orderByTransactionId = $this->getOrdersDetail($transactionId);
 
       if (sizeof($transactionById) > 0) {
@@ -78,7 +78,7 @@ class TransactionController extends Controller
 
     }
 
-    protected function getList ($transactionId) {
+    protected function getList ($transactionId,$userId) {
       $transactions = Transaction::select(
                        "TRANSACTION.TRANSACTION_ID",
                        "TRANSACTION.TRANSACTION_NUMBER",
@@ -106,7 +106,7 @@ class TransactionController extends Controller
                        )
                       )
                       ->join('CLIENT','CLIENT.CLIENT_ID','=','TRANSACTION.CLIENT_ID')
-                      ->where('TRANSACTION.USER_ID','=',$this->getUserId());
+                      ->where('TRANSACTION.USER_ID','=',$userId);
 
         if (null != $transactionId) {
           $transactions->addSelect(\Illuminate\Support\Facades\DB::raw("(SELECT SUM(TOTAL_PRICE) FROM ORDERS WHERE TRANSACTION_ID = ".$transactionId.") AS TOTAL"))
@@ -116,8 +116,8 @@ class TransactionController extends Controller
         return $transactions;
     }
 
-    public function getAllList () {
-      $transactions = $this->getList(null);
+    public function getAllList ($userId) {
+      $transactions = $this->getList(null,$userId);
       $search = Input::get('search.value');
       if (!empty($search)) {
           $filtered = "%".$search."%";
@@ -156,7 +156,6 @@ class TransactionController extends Controller
                 }
 
                 return '<td>
-                  <input type="hidden" name="_token" id="token" value="'.csrf_token().'">
                   <input type="hidden" name="transaction_id" id="transaction_id" value="'.$transactions->TRANSACTION_ID.'">
                   <div class="btn-group" role="group">
                     <button type="button" class="btn waves-effect dropdown-toggle '.$color.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="bos-status" '.$disabled.' >'.$transactionLabel.'<span class="caret"></span>
@@ -176,7 +175,7 @@ class TransactionController extends Controller
     protected function getOrdersDetail ($transactionId) {
       $ordersDetail = Order::select('ORDERS.ORDERS_ID','ORDERS.TRANSACTION_ID','ITEM.ITEM_CODE','ITEM.ITEM_NAME','ITEM.ITEM_SIZE','ITEM.ITEM_WEIGHT','ITEM.ITEM_PRICE','ORDERS.TOTAL_ITEM','ORDERS.TOTAL_PRICE')
                       ->join('ITEM','ITEM.ITEM_ID','=','ITEM.ITEM_ID')
-                      ->groupBy('ORDERS.ORDERS_ID')
+                      ->groupBy('ITEM.ITEM_ID')
                       ->havingRaw('ORDERS.TRANSACTION_ID = '.$transactionId);
       return $ordersDetail->get();
     }

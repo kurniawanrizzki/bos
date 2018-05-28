@@ -123,7 +123,7 @@ return [
     'log' => env('APP_LOG', 'single'),
 
     'log_level' => env('APP_LOG_LEVEL', 'debug'),
-    'is_dummy_version' => true,
+    'is_dummy_version' => false,
     'dummy_user_id' => 1,
     'limited_fetch_data' => 10,
     'applied_curency' => 'IDR ',

@@ -37,13 +37,13 @@
     <script src="{{ asset('/assets/js/pages/examples/sign-in.js') }}"></script>
     <script type="text/javascript">
     $(document).ready(function() {
-      $('ul.bos-status-dropdown li').click(function(e) {
+      $(document).on('click','ul.bos-status-dropdown li',function(e) {
         var status = $(this).text();
 
         $.ajax({
             type    :'POST',
             url     : "{{ route('transaction.update') }}",
-            data    : { _token:$('#token').val(),updated:status,id:$('#transaction_id').val() },
+            data    : { _token:'{{ csrf_token() }}',updated:status,id:$('#transaction_id').val() },
             dataType: 'json',
             success : function (e) {
 
@@ -79,7 +79,7 @@
         responsive : true,
         processing : true,
         serverSide : true,
-        ajax       : "{{ route('api.transactions') }}",
+        ajax       : "{{ route('api.transactions',[\Session::get('id')]) }}",
         columns    : [
           {'data':'TRANSACTION_NUMBER'},
           {'data':'INVOICE_NUMBER'},
@@ -94,7 +94,7 @@
         responsive : true,
         processing : true,
         serverSide : true,
-        ajax       : "{{ route('api.items') }}",
+        ajax       : "{{ route('api.items',[\Session::get('id')]) }}",
         columns    : [
           {'data':'ITEM_CODE'},
           {'data':'ITEM_NAME'},

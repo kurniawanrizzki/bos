@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 
 class Controller extends BaseController
 {
@@ -16,7 +17,7 @@ class Controller extends BaseController
       if (Config::get('app.is_dummy_version')) {
         return Config::get('app.dummy_user_id');
       }
-      return null;
+      return Session::get('id');
     }
 
 }

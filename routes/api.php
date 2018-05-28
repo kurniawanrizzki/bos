@@ -13,8 +13,5 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('transactions',['as'=>'api.transactions','uses'=>'TransactionController@getAllList']);
-Route::get('items',['as'=>'api.items','uses'=>'ItemController@getItemList']);
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get('/{userId}/transactions',['as'=>'api.transactions','uses'=>'TransactionController@getAllList']);
+Route::get('/{userId}/items',['as'=>'api.items','uses'=>'ItemController@getItemList']);
