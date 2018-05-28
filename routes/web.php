@@ -12,7 +12,7 @@
 */
 
 Route::get('/',['as'=>'auth.index','uses'=>'AuthController@index']);
-Route::post('/',['as'=>'auth.signin','uses'=>'AuthController@signin']);
+Route::post('/signin',['as'=>'auth.signin','uses'=>'AuthController@signin']);
 
 Route::group ([
     'prefix' => 'dashboard', 'middleware' => 'auth.bos'

@@ -49,11 +49,11 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xs-8 p-t-5">
-                    <input type="checkbox" name="rememberme" id="rememberme" class="filled-in chk-col-green-light-tosca">
-                    {!! Form::label('rememberme', trans('string.auth.rememberme')) !!}
+                <div class="col-xs-7 p-t-5">
+                    <!-- <input type="checkbox" name="rememberme" id="rememberme" class="filled-in chk-col-green-light-tosca">
+                    {!! Form::label('rememberme', trans('string.auth.rememberme')) !!} -->
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-5">
                     <button class="btn btn-block bg-green-light-tosca waves-effect" type="submit">{{ trans('string.auth.title') }}</button>
                 </div>
             </div>

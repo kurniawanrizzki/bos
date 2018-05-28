@@ -70,7 +70,8 @@ class TransactionController extends Controller
             'orders'=>$orderByTransactionId
           ]);
 
-          $pdf->setPaper('a4', 'landscape')->setWarnings(false);
+          $customPaper = array(0,0,567.00,283.80);
+          $pdf->setPaper($customPaper, 'portrait')->setWarnings(false);
           return $pdf->download();
 
       }
