@@ -16,7 +16,7 @@ return [
       'prefix' => 'transaction'
     ],
     'item' => [
-      'title' => 'Item',
+      'title' => 'Product',
       'icon' => 'local_offer',
       'url' => 'item.index',
       'prefix' => 'item'
@@ -39,6 +39,7 @@ return [
   'transaction_tb_title' => 'Transactions List',
   'orders_table' => ['CODE','NAME','SIZE','PRICE','TOTAL ITEM','TOTAL PRICE'],
   'items_table' => ['CODE','NAME','SIZE','STOCK','PRICE','ACTION'],
+  'item_detail_component'=>['CODE','NAME','DESCRIPTION','SIZE','WEIGHT','PRICE','STOCK'],
   'transactions_table'=> ['TRANSACTION NUMBER','INVOICE NUMBER','DATE','CUSTOMER NAME','STATUS','ACTION'],
   'transaction_detail_component' => ['STATUS','STATE STATUS','CUSTOMER NAME','CUSTOMER ADDRESS','CUSTOMER PHONE','TRANSACTION NUMBER','INVOICE NUMBER','DATE','TOTAL ORDER','SHIPPING TYPE','SHIPPING TOTAL'],
   'goto_detail_page' => "For the detail please go to <a href=' :url '> :title </a> page.",
@@ -53,7 +54,16 @@ return [
   'detailed_transaction_description' => 'This section will describe detail transaction of  <strong> :number </strong>.',
   'detailed_orders' => 'DETAILED ORDER',
   'detailed_orders_description' => 'This section will describe detail order of  related transaction.',
+  'detailed_item' => 'DETAILED PRODUCT',
+  'detailed_item_description' => 'This section will describe detail product of <strong> :code - :item </strong>.',
   'data_is_empty' => 'Data is Empty.',
+  'item_size_weight' => 'Size and Weight',
+  'item_availability' => 'Availability',
+  'item_add' => 'Add New Product',
+  'item_add_description' => 'This section allow user to add new product',
+  'item_edit' => 'Edit Product',
+  'item_edit_description' => 'This section allow user to edit <strong> :code - :item </strong>.',
+  'back' => 'Back',
   'transaction_actions' => [
     'edit' => [
       'title' => 'Edit',

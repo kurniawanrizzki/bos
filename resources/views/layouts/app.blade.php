@@ -18,7 +18,7 @@
     <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/themes/all-themes.css') }}" rel="stylesheet" />
   </head>
-  <body class="theme-green">
+  <body class="{{ !starts_with(Route::currentRouteName(),'auth')?'theme-green':'login-page' }}">
     @yield('content')
     <script src="{{ asset('/assets/plugins/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.js') }}"></script>

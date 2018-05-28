@@ -30,7 +30,7 @@
             </div>
         </div>
     </div>
-    <a class="btn btn-large bg-green btn-circle-lg waves-effect waves-circle waves-float" href="#" style="position:fixed;right:0;bottom:0;margin:20px;">
+    <a class="btn btn-large bg-green btn-circle-lg waves-effect waves-circle waves-float" href="{{ route('item.form') }}" style="position:fixed;right:0;bottom:0;margin:20px;">
       <i class="material-icons">add</i>
     </a>
 </section>

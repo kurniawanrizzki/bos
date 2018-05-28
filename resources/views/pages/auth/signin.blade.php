@@ -15,7 +15,7 @@
           {!!
             Form::open([
             'method' => 'POST',
-            'id' => 'signin_page'
+            'route' => 'auth.signin'
             ])
           !!}
 
