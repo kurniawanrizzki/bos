@@ -16,15 +16,15 @@
     <aside id="leftsidebar" class="sidebar">
         <div class="user-info">
             <div class="image">
-                <img src="{{ asset('/assets/images/user.png') }}" width="48" height="48" alt="User" />
+                <img id="profile_img" src="{{ '' === \Session::get('img')?asset('/assets/images/user.png'):\Session::get('img') }}" width="48" height="48" alt="User" />
             </div>
             <div class="info-container">
-                <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">John Doe</div>
-                <div class="email">john.doe@example.com</div>
+                <div id="profile_name" class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ \Session::get('name') }}</div>
+                <div id="profile_email" class="email">{{ \Session::get('email') }}</div>
                 <div class="btn-group user-helper-dropdown">
                     <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
                     <ul class="dropdown-menu pull-right">
-                        <li><a href="javascript:void(0);"><i class="material-icons">person</i>Profile</a></li>
+                        <!-- <li><a href="javascript:void(0);"><i class="material-icons">person</i>Profile</a></li> -->
                         <li><a href="{{ route('auth.signout') }}"><i class="material-icons">input</i>Sign Out</a></li>
                     </ul>
                 </div>

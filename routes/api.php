@@ -13,5 +13,5 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/{userId}/transactions',['as'=>'api.transactions','uses'=>'TransactionController@getAllList']);
-Route::get('/{userId}/items',['as'=>'api.items','uses'=>'ItemController@getItemList']);
+Route::post('transactions',['as'=>'api.transactions','uses'=>'TransactionController@getAllList']);
+Route::post('items',['as'=>'api.items','uses'=>'ItemController@getItemList']);

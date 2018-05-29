@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use App\Models\Item;
@@ -50,7 +52,12 @@ class ItemController extends Controller
       return redirect()->route('item.index');
     }
 
-    public function getItemList ($userId) {
+    public function getItemList (Request $request) {
+
+        $this->validate($request, Config::get('app.request_rule'));
+
+        $userId = $this->getUserId($request->token);
+
         $search = Input::get('search.value');
         $items = Item::where('USER_ID','=',$userId);
 
@@ -86,9 +93,11 @@ class ItemController extends Controller
 
     protected function buildRequestParameters (Request $request) {
 
+        $userId = $this->getUserId($request);
+
         $parameter = [
             'ITEM_CODE' => $request->item_code,
-            'USER_ID'   => $this->getUserId(),
+            'USER_ID'   => $userId,
             'ITEM_NAME' => $request->item_name,
             'ITEM_DESC' => $request->item_desc,
             'ITEM_SIZE' => $request->item_size,

@@ -15,18 +15,22 @@
           {!!
             Form::open([
             'method' => 'POST',
-            'route' => 'auth.signin'
+            'route' => 'auth.signin',
+            'id'   => 'sign_in'
             ])
           !!}
 
             <div class="msg">{{ trans('string.auth.welcome') }}</div>
+            @if(null !== $errors->first('username'))
+              <span style="color:#F44336;font-size:12px;"> <strong>{{ $errors->first('username') }}</strong> </span>
+            @endif
             <div class="input-group">
                 <span class="input-group-addon">
                     <i class="material-icons">person</i>
                 </span>
                 <div class="form-line">
                     {!!
-                      Form::text('username', null, [
+                      Form::text('username', old('username'), [
                         'class' => 'form-control',
                         'placeholder' => trans('string.auth.username'),
                         'required autofocus'
@@ -34,6 +38,12 @@
                     !!}
                 </div>
             </div>
+            @if(null !== $errors->first('password'))
+              <span style="color:#F44336;font-size:12px;"> <strong>{{ $errors->first('password') }}</strong> </span>
+            @endif
+            @if(isset($messages))
+              <span style="color:#F44336;font-size:12px;"> <strong>{{ $messages[0] }}</strong> </span>
+            @endif
             <div class="input-group">
                 <span class="input-group-addon">
                     <i class="material-icons">lock</i>
@@ -56,6 +66,11 @@
                 <div class="col-xs-5">
                     <button class="btn btn-block bg-green-light-tosca waves-effect" type="submit">{{ trans('string.auth.title') }}</button>
                 </div>
+                @if(null !== session('error') || isset($error))
+                  <center>
+                    <span style="color:#F44336;font-size:12px;"> <strong>{{ session('error') }}</strong> </span>
+                  </center>
+                @endif
             </div>
 
           {!! Form::close() !!}

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Lang;
 use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Order;
@@ -16,7 +18,8 @@ class TransactionController extends Controller
     }
 
     public function view ($transactionId) {
-      $transactionById  = $this->getList($transactionId, $this->getUserId())->get();
+      $token = Session::get('token');
+      $transactionById  = $this->getList($transactionId, $this->getUserId($token))->get();
       $orderByTransactionId = $this->getOrdersDetail($transactionId);
       return view('pages.menu.transactions.view',[
         'transaction'=>$transactionById,
@@ -60,7 +63,8 @@ class TransactionController extends Controller
     }
 
     public function print ($transactionId) {
-      $transactionById  = $this->getList($transactionId, $this->getUserId())->get();
+      $token = Session::get('token');
+      $transactionById  = $this->getList($transactionId, $this->getUserId($token))->get();
       $orderByTransactionId = $this->getOrdersDetail($transactionId);
 
       if (sizeof($transactionById) > 0) {
@@ -116,7 +120,11 @@ class TransactionController extends Controller
         return $transactions;
     }
 
-    public function getAllList ($userId) {
+    public function getAllList (Request $request) {
+
+      $this->validate($request, Config::get('app.request_rule'));
+      $userId = $this->getUserId($request->token);
+
       $transactions = $this->getList(null,$userId);
       $search = Input::get('search.value');
       if (!empty($search)) {
@@ -174,9 +182,8 @@ class TransactionController extends Controller
 
     protected function getOrdersDetail ($transactionId) {
       $ordersDetail = Order::select('ORDERS.ORDERS_ID','ORDERS.TRANSACTION_ID','ITEM.ITEM_CODE','ITEM.ITEM_NAME','ITEM.ITEM_SIZE','ITEM.ITEM_WEIGHT','ITEM.ITEM_PRICE','ORDERS.TOTAL_ITEM','ORDERS.TOTAL_PRICE')
-                      ->join('ITEM','ITEM.ITEM_ID','=','ITEM.ITEM_ID')
-                      ->groupBy('ITEM.ITEM_ID')
-                      ->havingRaw('ORDERS.TRANSACTION_ID = '.$transactionId);
+                      ->join('ITEM','ORDERS.ITEM_ID','=','ITEM.ITEM_ID')
+                      ->where('ORDERS.TRANSACTION_ID', '=' ,$transactionId);
       return $ordersDetail->get();
     }
 

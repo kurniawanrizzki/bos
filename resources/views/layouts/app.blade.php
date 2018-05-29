@@ -18,7 +18,7 @@
     <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/themes/all-themes.css') }}" rel="stylesheet" />
   </head>
-  <body class="{{ !starts_with(Route::currentRouteName(),'auth')?'theme-green':'login-page' }}">
+  <body class="{{ !starts_with(Route::currentRouteName(),'auth')?'theme-red':'login-page' }}">
     @yield('content')
     <script src="{{ asset('/assets/plugins/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.js') }}"></script>
@@ -79,7 +79,12 @@
         responsive : true,
         processing : true,
         serverSide : true,
-        ajax       : "{{ route('api.transactions',[\Session::get('id')]) }}",
+        ajax       : {
+          type     : 'POST',
+          url      : "{{ route('api.transactions') }}",
+          dataType : 'json',
+          data    : { token:"{{ \Session::get('token') }}"},
+        },
         columns    : [
           {'data':'TRANSACTION_NUMBER'},
           {'data':'INVOICE_NUMBER'},
@@ -94,7 +99,12 @@
         responsive : true,
         processing : true,
         serverSide : true,
-        ajax       : "{{ route('api.items',[\Session::get('id')]) }}",
+        ajax       : {
+          type     : 'POST',
+          url      : "{{ route('api.items') }}",
+          dataType : 'json',
+          data     : { token:"{{ \Session::get('token') }}"},
+        },
         columns    : [
           {'data':'ITEM_CODE'},
           {'data':'ITEM_NAME'},

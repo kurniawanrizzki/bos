@@ -8,16 +8,21 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
+use App\Models\User;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected function getUserId () {
-      if (Config::get('app.is_dummy_version')) {
-        return Config::get('app.dummy_user_id');
+    protected function getUserId ($token) {
+      $userId = null;
+
+      $query = User::select('USER_ID')->where('USER_SECURITY_TOKEN',$token);
+      if ($query->count() > 0) {
+        $userId = $query->get()[0]->USER_ID;
       }
-      return Session::get('id');
+
+      return $userId;
     }
 
 }
