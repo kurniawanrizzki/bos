@@ -90,6 +90,7 @@ class TransactionController extends Controller
                        "TRANSACTION.INVOICE_NUMBER",
                        "TRANSACTION.SHIPPING_TYPE",
                        "TRANSACTION.SHIPPING_TOTAL",
+                       'TRANSACTION.SHIPPING_TOTAL_WEIGHT',
                        "CLIENT.CLIENT_NAME as CUSTOMER_NAME",
                        "CLIENT.CLIENT_ADDRESS as ADDRESS",
                        "CLIENT.CLIENT_DISTRICTS as DISTRICT",
@@ -137,7 +138,7 @@ class TransactionController extends Controller
               ->addColumn('ACTION', function ($transactions){
                 return '<a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route("transaction.view",[$transactions->TRANSACTION_ID]).'"><i class="material-icons">search</i></a>
                 <a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route("transaction.print",[$transactions->TRANSACTION_ID]).'"><i class="material-icons">print</i></a>
-                <a class="btn bg-red btn-circle waves-effect waves-circle waves-float" href="'.route("transaction.delete",[$transactions->TRANSACTION_ID]).'"><i class="material-icons">delete</i></a>';
+                <a class="btn bg-red btn-circle waves-effect waves-circle waves-float" data-toggle="modal" data-transaction-id="'.$transactions->TRANSACTION_ID.'" data-transaction-number="'.$transactions->TRANSACTION_NUMBER.'" data-target="#delete_confirmation_modal"><i class="material-icons">delete</i></a>';
               })
               ->addColumn('STATUS_HTML', function($transactions){
                 $color = $transactions->STATUS == 4?'btn-success':

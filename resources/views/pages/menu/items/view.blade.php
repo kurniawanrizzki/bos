@@ -56,7 +56,7 @@
                                     {{ trans('string.item_detail_component')[4] }}
                                   </div>
                                   <div class="col-md-8">
-                                    {{ $item->ITEM_WEIGHT }}
+                                    {{ $item->ITEM_WEIGHT." Kg" }}
                                   </div>
                               </div>
                             </div>
@@ -79,7 +79,7 @@
                                     {{ trans('string.item_detail_component')[6] }}
                                   </div>
                                   <div class="col-md-8">
-                                    {{ $item->ITEM_STOCK }}
+                                    {{ $item->ITEM_STOCK." Pcs" }}
                                   </div>
                               </div>
                             </div>

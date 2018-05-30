@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
@@ -41,12 +42,14 @@ class ItemController extends Controller
     }
 
     public function store (Request $request) {
+      $this->validate ($request,Config::get('app.item_rule'), Lang::get('validation.item_validation_messages'));
       $parameter = $this->buildRequestParameters($request);
       Item::insert($parameter);
       return redirect()->route('item.index');
     }
 
     public function update (Request $request) {
+      $this->validate ($request,Config::get('app.item_rule'), Lang::get('validation.item_validation_messages'));
       $parameter = $this->buildRequestParameters($request);
       Item::where('ITEM_ID',$parameter['ITEM_ID'])->update($parameter);
       return redirect()->route('item.index');
@@ -83,7 +86,7 @@ class ItemController extends Controller
                         <a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route('item.form',[$items->ITEM_ID]).'">
                             <i class="material-icons">edit</i>
                         </a>
-                        <a class="btn bg-red btn-circle waves-effect waves-circle waves-float" href="'.route('item.delete',[$items->ITEM_ID]).'">
+                        <a class="btn bg-red btn-circle waves-effect waves-circle waves-float" data-toggle="modal" data-product-id="'.$items->ITEM_ID.'" data-product-name="'.$items->ITEM_CODE.' - '.$items->ITEM_NAME.'" data-target="#delete_confirmation_modal">
                             <i class="material-icons">delete</i>
                         </a>';
               })
@@ -93,8 +96,9 @@ class ItemController extends Controller
 
     protected function buildRequestParameters (Request $request) {
 
-        $userId = $this->getUserId($request);
+        $userId = $this->getUserId(Session::get('token'));
 
+        $price  = str_replace(",","",$request->item_price);
         $parameter = [
             'ITEM_CODE' => $request->item_code,
             'USER_ID'   => $userId,
@@ -102,7 +106,7 @@ class ItemController extends Controller
             'ITEM_DESC' => $request->item_desc,
             'ITEM_SIZE' => $request->item_size,
             'ITEM_WEIGHT'=> $request->item_weight,
-            'ITEM_PRICE'=> $request->item_price,
+            'ITEM_PRICE'=> $price,
             'ITEM_STOCK' => $request->item_stock
         ];
 

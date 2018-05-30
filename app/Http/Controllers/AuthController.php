@@ -58,8 +58,10 @@ class AuthController extends Controller
       Session::put('token',$request->_token);
       Session::put('name',$data->USER_NAME);
       Session::put('email',$data->USER_EMAIL);
+      Session::put('hp',$data->USER_HP);
+      Session::put('address',$data->USER_ADDRESS);
       Session::put('img', "");
-      
+
       $data->USER_SECURITY_TOKEN = $request->_token;
       $data->save();
 

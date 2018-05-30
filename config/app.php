@@ -132,6 +132,15 @@ return [
     'request_rule' => [
       'token' => 'required'
     ],
+    'item_rule' => [
+      'item_code' => 'required',
+      'item_name' => 'required',
+      'item_desc' => 'required',
+      'item_size' => 'required',
+      'item_weight' => 'required',
+      'item_price' => 'required',
+      'item_stock' => 'required|numeric'
+    ],
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

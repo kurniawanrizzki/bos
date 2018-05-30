@@ -6,7 +6,7 @@
   </head>
   <style rel="stylesheet">
     .noborder {border: none;}
-    .content {font-size: 12px;}
+    .content {font-size: 9px;}
   </style>
   <body>
     <div class="content">
@@ -18,6 +18,32 @@
           <td><strong>Service</strong></td>
           <td> <strong>:</strong> </td>
           <td>{{ $transaction[0]->SHIPPING_TYPE }}</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td><strong>Weight</strong></td>
+          <td> <strong>:</strong> </td>
+          <td>{{ $transaction[0]->SHIPPING_TOTAL_WEIGHT." Kg" }}</td>
+        </tr>
+      </table>
+      <table cellspacing="0" cellpadding="0" class="noborder" style="margin:25px 0 0">
+        <tr>
+          <td> <strong> Sender Information </strong> </td>
+        </tr>
+        <tr>
+          <td> <strong>Name</strong> </td>
+          <td> <strong>:</strong> </td>
+          <td> {{ \Session::get('name') }} </td>
+        </tr>
+        <tr>
+          <td> <strong>Address</strong> </td>
+          <td> <strong>:</strong> </td>
+          <td> {{ \Session::get('address') }} </td>
+        </tr>
+        <tr>
+          <td> <strong>Phone Number</strong> </td>
+          <td> <strong>:</strong> </td>
+          <td> {{ \Session::get('hp') }} </td>
         </tr>
       </table>
       <table cellspacing="0" cellpadding="0" class="noborder" style="margin:25px 0 0">

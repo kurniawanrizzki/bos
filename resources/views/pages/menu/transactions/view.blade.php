@@ -137,6 +137,14 @@
                               {{ \Config::get('app.applied_curency').number_format($transaction[0]->SHIPPING_TOTAL, 2) }}
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                              {{ trans('string.transaction_detail_component')[11] }}
+                            </div>
+                            <div class="col-md-8">
+                              {{ $transaction[0]->SHIPPING_TOTAL_WEIGHT.' Kg' }}
+                            </div>
+                        </div>
                     </div>
                 </div>
 

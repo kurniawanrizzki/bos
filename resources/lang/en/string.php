@@ -39,9 +39,9 @@ return [
   'transaction_tb_title' => 'Transactions List',
   'orders_table' => ['CODE','NAME','SIZE','PRICE','TOTAL ITEM','TOTAL PRICE'],
   'items_table' => ['CODE','NAME','SIZE','STOCK','PRICE','ACTION'],
-  'item_detail_component'=>['CODE','NAME','DESCRIPTION','SIZE','WEIGHT','PRICE','STOCK'],
+  'item_detail_component'=>['CODE','NAME','DESCRIPTION','SIZE','WEIGHT (*Kg)','PRICE (*/Pcs)','STOCK (*Pcs)'],
   'transactions_table'=> ['TRANSACTION NUMBER','INVOICE NUMBER','DATE','CUSTOMER NAME','STATUS','ACTION'],
-  'transaction_detail_component' => ['STATUS','STATE STATUS','CUSTOMER NAME','CUSTOMER ADDRESS','CUSTOMER PHONE','TRANSACTION NUMBER','INVOICE NUMBER','DATE','TOTAL ORDER','SHIPPING TYPE','SHIPPING TOTAL'],
+  'transaction_detail_component' => ['STATUS','STATE STATUS','CUSTOMER NAME','CUSTOMER ADDRESS','CUSTOMER PHONE','TRANSACTION NUMBER','INVOICE NUMBER','DATE','TOTAL ORDER','SHIPPING TYPE','SHIPPING TOTAL','SHIPPING TOTAL WEIGHT'],
   'goto_detail_page' => "For the detail please go to <a href=' :url '> :title </a> page.",
   'delivered_status' => 'DELIVERED',
   'transfered_status' => 'TRANSFERED',
@@ -58,7 +58,7 @@ return [
   'detailed_item_description' => 'This section will describe detail product of <strong> :code - :item </strong>.',
   'data_is_empty' => 'Data is Empty.',
   'item_size_weight' => 'Size and Weight',
-  'item_availability' => 'Availability',
+  'item_availability' => 'Price and Stock',
   'item_add' => 'Add New Product',
   'item_add_description' => 'This section allow user to add new product',
   'item_edit' => 'Edit Product',
@@ -74,4 +74,9 @@ return [
       'url' => '#'
     ]
   ],
+  'delete_confirmation_modal_title' => 'Product Deletion Confirmation',
+  'signout_confirmation_modal_title' => 'Sign out Confirmation',
+  'signout_confirmation_modal_content' => 'Do you want to sign out from this session ?',
+  'confirm_button' => 'Confirm',
+  'cancel_button' => 'Cancel',
 ];
