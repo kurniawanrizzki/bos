@@ -71,43 +71,60 @@
           $('#delete_confirmation_modal_confirm').attr('href',url);
       });
 
-      $(document).on('click','ul.bos-status-dropdown li',function(e) {
-        var status = $(this).text();
+      $('#status_update_confirmation_modal').on('show.bs.modal', function(e){
+        var dataId = $(e.relatedTarget).data('transaction-id');
+        var dataName = $(e.relatedTarget).data('transaction-number');
+        var dataValue = $(e.relatedTarget).data('transaction-value');
+        var dataAttr = $(e.relatedTarget).data('transaction-attribute');
+        var descAttr = (dataAttr == 0)?"cancel":((dataAttr == 1)?"transfer":"deliver");
+        var content = "Do you want to update the "+descAttr+" status of <strong> "+dataName+" </strong> data?";
 
-        $.ajax({
-            type    :'POST',
-            url     : "{{ route('transaction.update') }}",
-            data    : { _token:'{{ csrf_token() }}',updated:status,id:$('#transaction_id').val() },
-            dataType: 'json',
-            success : function (e) {
+        if (dataAttr > 1 && dataValue < 1) {
+          content = 'Please to fill this field before update '+descAttr+' status of <strong>'+dataName+" </strong> : "+
+                    '<br><span style="color:#F44336;font-size:12px;" id="invoice_required" hidden> <strong> Please to fill the invoice number before confirm it. </strong> </span>'+
+                    '<div class="form-group form-float">'+
+                        '<div class="form-line">'+
+                            '{!! Form::text("item_invoice","",["class"=>"form-control","placeholder"=>"INVOICE NUMBER"]) !!}'+
+                        '</div>'+
+                    '</div>';
+        }
 
-              console.log(e);
-              var bosElement = $('#bos-status');
 
-              var deliveredStatus = "{{ trans('string.delivered_status') }}";
-              var canceledStatus = "{{ trans('string.canceled_status') }}";
-              var transferedStatus = "{{ trans('string.transfered_status') }}";
-
-              bosElement.text(status);
-              bosElement.removeAttr('class');
-
-              if (status == deliveredStatus ) {
-                bosElement.attr('class','btn btn-success waves-effect dropdown-toggle');
-                bosElement.attr('disabled',true);
-              } else if (status == transferedStatus) {
-                bosElement.attr('class','btn btn-primary waves-effect dropdown-toggle');
-              } else if (status == canceledStatus) {
-                bosElement.attr('class','btn btn-danger waves-effect dropdown-toggle');
-                bosElement.attr('disabled',true);
-              }
-
-            },
-            error   : function (e) {
-                console.log(e);
-            }
-        });
+        $('#status_update_confirmation_modal_content').html(content);
+        $('#status_update_confirmation_modal_confirm').attr('data-transaction-id',dataId);
+        $('#status_update_confirmation_modal_confirm').attr('data-transaction-attribute',dataAttr);
 
       });
+
+      $(document).on('click','#status_update_confirmation_modal_confirm', function(e) {
+        var dataId = $(this).data('transaction-id');
+        var dataAttr = $(this).data('transaction-attribute');
+        var dataInvoice = '';
+
+        if (dataAttr > 1) {
+          dataInvoice = $("input[name='item_invoice']").val();
+        }
+
+        $.ajax({
+          type    : 'POST',
+          url     : "{{ route('api.transaction.update') }}",
+          dataType: 'json',
+          data    : { token:"{{ \Session::get('token') }}", id:dataId, type:dataAttr, invoice:dataInvoice},
+          success : function(e) {
+            if (e.updated) {
+              location.reload();
+              return;
+            }
+            if (dataAttr > 1) {
+              $('#invoice_required').show();
+            }
+          },
+          error   : function(e) {
+            console.log(e);
+            $('#status_update_confirmation_modal').modal('hide');
+          }
+        });
+      })
 
       $('#transactions_tb').DataTable({
         responsive : true,
@@ -124,8 +141,9 @@
           {'data':'INVOICE_NUMBER'},
           {'data':'TRANSACTION_DATE'},
           {'data':'CUSTOMER_NAME','name':'CLIENT.CLIENT_NAME'},
-          {'data':'STATUS_HTML','searchable':false,'orderable':false},
-          {'data':'ACTION','searchable':false,'orderable':false}
+          {'data':'IS_CANCELED'},
+          {'data':'IS_TRANSFERED'},
+          {'data':'IS_DELIVERED'},
         ]
       });
 
@@ -145,7 +163,7 @@
           {'data':'ITEM_SIZE'},
           {'data':'ITEM_STOCK'},
           {'data':'PRICE'},
-          {'data':'ACTION','searchable':false,'orderable':false}
+          // {'data':'ACTION','searchable':false,'orderable':false}
         ]
       });
 

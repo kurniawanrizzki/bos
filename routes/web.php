@@ -28,7 +28,6 @@ Route::group ([
       Route::get('/{id}/view', ['as'=>'transaction.view','uses'=>'TransactionController@view']);
       Route::get('/{id}/delete',['as'=>'transaction.delete','uses'=>'TransactionController@delete']);
       Route::get('/{id}/print',['as'=>'transaction.print','uses'=>'TransactionController@print']);
-      Route::post('/udpate',['as'=>'transaction.update','uses'=>'TransactionController@update']);
 
   });
 

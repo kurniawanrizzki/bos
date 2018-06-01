@@ -16,38 +16,6 @@
                         <h2 class="card-inside-title">{{ trans('string.menuItems.transaction.title') }}</h2>
                         <div class="row">
                             <div class="col-md-3">
-                              {{ trans('string.transaction_detail_component')[0] }}
-                            </div>
-                            <div class="col-md-8">
-                              @if($transaction[0]->STATUS == 4)
-                                <button class="btn btn-success waves-effect">
-                                  {{ trans('string.delivered_status') }}
-                                </button>
-                              @elseif($transaction[0]->STATUS == 3)
-                                <button class="btn btn-primary waves-effect">
-                                  {{ trans('string.transfered_status') }}
-                                </button>
-                              @elseif($transaction[0]->STATUS == 2)
-                                <button class="btn btn-danger waves-effect">
-                                  {{ trans('string.paid_canceled_status') }}
-                                </button>
-                              @elseif($transaction[0]->STATUS == 1)
-                                <button class="btn btn-danger waves-effect">
-                                  {{ trans('string.canceled_status') }}
-                                </button>
-                              @elseif($transaction[0]->STATUS == 0)
-                                  <button class="btn btn-info waves-effect">
-                                    {{ trans('string.waiting_status') }}
-                                </button>
-                              @else
-                                <button class="btn btn-warning waves-effect">
-                                  {{ trans('string.unknown_status') }}
-                                </button>
-                              @endif
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3">
                               {{ trans('string.transaction_detail_component')[1] }}
                             </div>
                             <div class="col-md-8">

@@ -16,13 +16,22 @@
                     </div>
                     <div class="body table-responsive" style="min-height:235px;">
                         <table class="table table-bordered table-striped table-hover dataTable" id="transactions_tb" width="100%">
-                            <thead>
-                              <tr>
-                                @foreach(trans('string.transactions_table') as $title)
-                                  <th>{{$title}}</th>
-                                @endforeach
-                              </tr>
-                            </thead>
+                          <thead>
+                            <tr>
+                              @foreach(trans('string.transactions_table') as $title)
+                                @if($title != 'STATUS')
+                                  <th rowspan="2">{{$title}}</th>
+                                @else
+                                  <th colspan="3" style="text-align: center;border-bottom-color: transparent;">{{$title}}</th>
+                                @endif
+                              @endforeach
+                            </tr>
+                            <tr>
+                              @foreach(trans('string.status_list') as $status)
+                                <th>{{$status}}</th>
+                              @endforeach
+                            </tr>
+                          </thead>
                         </table>
                     </div>
                 </div>

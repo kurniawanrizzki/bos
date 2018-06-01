@@ -19,9 +19,16 @@
                             <thead>
                               <tr>
                                 @foreach(trans('string.transactions_table') as $title)
-                                  @if($title != 'ACTION')
-                                    <th>{{$title}}</th>
+                                  @if($title != 'STATUS')
+                                    <th rowspan="2">{{$title}}</th>
+                                  @else
+                                    <th colspan="3" style="text-align: center;border-bottom-color: transparent;">{{$title}}</th>
                                   @endif
+                                @endforeach
+                              </tr>
+                              <tr>
+                                @foreach(trans('string.status_list') as $status)
+                                  <th>{{$status}}</th>
                                 @endforeach
                               </tr>
                             </thead>
@@ -42,29 +49,35 @@
                                       <td>{{ $transaction->TRANSACTION_DATE }}</td>
                                       <td>{{ $transaction->CUSTOMER_NAME }}</td>
                                       <td>
-                                        @if($transaction->STATUS == 4)
-                                          <button class="btn btn-success waves-effect">
-                                            {{ trans('string.delivered_status') }}
-                                          </button>
-                                        @elseif($transaction->STATUS == 3)
-                                          <button class="btn btn-primary waves-effect">
-                                            {{ trans('string.transfered_status') }}
-                                          </button>
-                                        @elseif($transaction->STATUS == 2)
-                                          <button class="btn btn-danger waves-effect">
-                                            {{ trans('string.paid_canceled_status') }}
-                                          </button>
-                                        @elseif($transaction->STATUS == 1)
-                                          <button class="btn btn-danger waves-effect">
-                                            {{ trans('string.canceled_status') }}
-                                          </button>
-                                        @elseif($transaction->STATUS == 0)
-                                            <button class="btn btn-info waves-effect">
-                                              {{ trans('string.waiting_status') }}
+                                        @if($transaction->IS_CANCELED == 0)
+                                          <button type="button" class="btn btn-danger waves-effect waves-float">
+                                            <i class="material-icons">close</i>
                                           </button>
                                         @else
-                                          <button class="btn btn-warning waves-effect">
-                                            {{ trans('string.unknown_status') }}
+                                          <button type="button" class="btn btn-info waves-effect waves-float">
+                                            <i class="material-icons">check</i>
+                                          </button>
+                                        @endif
+                                      </td>
+                                      <td>
+                                        @if($transaction->IS_TRANSFERED == 0)
+                                          <button type="button" class="btn btn-danger waves-effect waves-float">
+                                            <i class="material-icons">close</i>
+                                          </button>
+                                        @else
+                                          <button type="button" class="btn btn-info waves-effect waves-float">
+                                            <i class="material-icons">check</i>
+                                          </button>
+                                        @endif
+                                      </td>
+                                      <td>
+                                        @if($transaction->IS_DELIVERED == 0)
+                                          <button type="button" class="btn btn-danger waves-effect waves-float">
+                                            <i class="material-icons">close</i>
+                                          </button>
+                                        @else
+                                          <button type="button" class="btn btn-info waves-effect waves-float">
+                                            <i class="material-icons">check</i>
                                           </button>
                                         @endif
                                       </td>

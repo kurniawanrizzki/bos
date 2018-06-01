@@ -38,25 +38,41 @@ class TransactionController extends Controller
     }
 
     public function update (Request $request) {
-      $status = "";
-      $find = Transaction::where('TRANSACTION_ID','=',$request->id);
 
-      if ($find->count() > 0) {
+      $userId = $this->getUserId($request->token);
+      $find = Transaction::where('TRANSACTION_ID','=',$request->id)->where('USER_ID','=',$userId)->get();
 
-        $status = $request->updated;
-        if ($status == Lang::get('string.delivered_status')) {
-            $find->update(['IS_DELIVERED'=>1]);
-        } else if ($status == Lang::get('string.canceled_status')) {
-            $find->update(['IS_CANCELED'=>1]);
-        } else if ($status == Lang::get('string.transfered_status')) {
-            $find->update(['IS_TRANSFERED'=>1]);
+      if (count($find) > 0) {
+        if ($request->type == 0) {
+          $find[0]->IS_CANCELED = $find[0]->IS_CANCELED == 0?1:0;
+        } else if ($request->type == 1) {
+          $find[0]->IS_TRANSFERED = $find[0]->IS_TRANSFERED == 0?1:0;
+        } else if ($request->type == 2) {
+          if ($find[0]->IS_DELIVERED < 1) {
+            if ($request->invoice != '') {
+              $find[0]->INVOICE_NUMBER = $request->invoice;
+            } else {
+              return response()->json(
+                [
+                    "updated"=> false,
+                    "cause" => "Please to fill the invoice number before confirm it."
+                ]
+              );
+            }
+          }
+          $find[0]->IS_DELIVERED = $find[0]->IS_DELIVERED == 0?1:0;
         }
 
+        $find[0]->save();
+        return response()->json([
+          "updated" => true
+        ]);
       }
 
       return response()->json(
         [
-            "updated"=> $status
+            "updated"=> false,
+            "cause" => "There is something wrong."
         ]
       );
 
@@ -135,50 +151,41 @@ class TransactionController extends Controller
                           ->orWhere("CLIENT.CLIENT_NAME","LIKE",$filtered);
       }
       return \DataTables::of($transactions)
-              ->addColumn('ACTION', function ($transactions){
-                return '<a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route("transaction.view",[$transactions->TRANSACTION_ID]).'"><i class="material-icons">search</i></a>
-                <a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route("transaction.print",[$transactions->TRANSACTION_ID]).'"><i class="material-icons">print</i></a>
-                <a class="btn bg-red btn-circle waves-effect waves-circle waves-float" data-toggle="modal" data-transaction-id="'.$transactions->TRANSACTION_ID.'" data-transaction-number="'.$transactions->TRANSACTION_NUMBER.'" data-target="#delete_confirmation_modal"><i class="material-icons">delete</i></a>';
+              ->editColumn('IS_CANCELED', function($transactions) {
+                return $this->getStatusAttr(
+                  $transactions->TRANSACTION_ID,
+                  $transactions->IS_CANCELED,
+                  $transactions->TRANSACTION_NUMBER,
+                  0
+                );
               })
-              ->addColumn('STATUS_HTML', function($transactions){
-                $color = $transactions->STATUS == 4?'btn-success':
-                        ($transactions->STATUS == 3?btn-primary:
-                            (($transactions->STATUS == 2) || ($transactions->STATUS == 1)?'btn-danger':
-                            ($transactions->STATUS == 0?'btn-info':'btn-warning')));
-
-                $disabled = ($transactions->STATUS == 4) || ($transactions->STATUS == 2) || ($transactions->STATUS == 1)?'disabled':'';
-
-                $transactionLabel = null;
-
-                if ($transactions->STATUS == 4) {
-                    $transactionLabel = Lang::get('string.delivered_status');
-                } else if ($transactions->STATUS == 3) {
-                    $transactionLabel = Lang::get('string.transfered_status');
-                } else if ($transactions->STATUS == 2) {
-                    $transactionLabel = Lang::get('string.paid_canceled_status');
-                } else if ($transactions->STATUS == 1) {
-                    $transactionLabel = Lang::get('string.canceled_status');
-                } else if ($transactions->STATUS == 0) {
-                    $transactionLabel = Lang::get('string.waiting_status');
-                } else {
-                    $transactionLabel = Lang::get('string.unknown_status');
-                }
-
-                return '<td>
-                  <input type="hidden" name="transaction_id" id="transaction_id" value="'.$transactions->TRANSACTION_ID.'">
-                  <div class="btn-group" role="group">
-                    <button type="button" class="btn waves-effect dropdown-toggle '.$color.'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="bos-status" '.$disabled.' >'.$transactionLabel.'<span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu bos-status-dropdown">
-                        <li><a class=" waves-effect waves-block">'.Lang::get('string.delivered_status').'</a></li>
-                        <li><a class=" waves-effect waves-block">'.Lang::get('string.transfered_status').'</a></li>
-                        <li><a class=" waves-effect waves-block">'.Lang::get('string.canceled_status').'</a></li>
-                    </ul>
-                  </div>
-                </td>';
+              ->editColumn('IS_TRANSFERED', function($transactions){
+                return $this->getStatusAttr(
+                  $transactions->TRANSACTION_ID,
+                  $transactions->IS_TRANSFERED,
+                  $transactions->TRANSACTION_NUMBER,
+                  1
+                );
               })
-              ->rawColumns(["ACTION","STATUS_HTML"])
+              ->editColumn('IS_DELIVERED', function($transactions){
+                return $this->getStatusAttr(
+                  $transactions->TRANSACTION_ID,
+                  $transactions->IS_DELIVERED,
+                  $transactions->TRANSACTION_NUMBER,
+                  2
+                );
+              })
+              ->rawColumns(["IS_CANCELED","IS_TRANSFERED","IS_DELIVERED"])
               ->make();
+    }
+
+    protected function getStatusAttr ($id, $value, $desc, $type) {
+      $btnColor = $value == 0?'btn-danger':'btn-info';
+      $btnIcon = $value == 0?'close':'check';
+      return '
+        <a data-target="#status_update_confirmation_modal" data-toggle="modal" data-transaction-id="'.$id.'" data-transaction-value="'.$value.'" data-transaction-number="'.$desc.'" data-transaction-attribute="'.$type.'" class="btn '.$btnColor.' waves-effect waves-float">
+          <i class="material-icons">'.$btnIcon.'</i>
+        </a>';
     }
 
     protected function getOrdersDetail ($transactionId) {
