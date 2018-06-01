@@ -16,25 +16,21 @@
     <link href="{{ asset('/assets/plugins/animate-css/animate.css') }}" rel="stylesheet" />
     <link href="{{ asset('/assets/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/plugins/jquery-spinner/css/bootstrap-spinner.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/plugins/jquery-ui/jquery-ui.css') }}" rel="stylesheet" />
     <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/themes/all-themes.css') }}" rel="stylesheet" />
   </head>
   <body class="{{ !starts_with(Route::currentRouteName(),'auth')?'theme-red':'login-page' }}">
     @yield('content')
     <script src="{{ asset('/assets/plugins/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-ui/context-menu/jquery.ui-contextmenu.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ asset('/assets/plugins/node-waves/waves.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-validation/jquery.validate.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-spinner/js/jquery.spinner.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-datatable/jquery.dataTables.js') }}"></script>
-    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js') }}"></script>
-    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/buttons.flash.min.js') }}"></script>
-    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/jszip.min.js') }}"></script>
-    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/vfs_fonts.js') }}"></script>
-    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('/assets/plugins/jquery-datatable/extensions/export/buttons.print.min.js') }}"></script>
     <script src="{{ asset('/assets/js/simple.money.format.js') }}"></script>
     <script src="{{ asset('/assets/js/admin.js') }}"></script>
     <script src="{{ asset('/assets/js/pages/examples/sign-in.js') }}"></script>
@@ -46,29 +42,6 @@
         if($(this).val().trim().length === 0){
           $(this).val('1,000');
         }
-      });
-
-      $('#delete_confirmation_modal').on('show.bs.modal', function(e) {
-          var url = null;
-          var dataId = $(e.relatedTarget).data('product-id');
-          var dataName = $(e.relatedTarget).data('product-name');
-
-          if ('undefined' !== typeof(dataId) && 'undefined' !== typeof(dataName)) {
-            url = '/dashboard/item/'+dataId+'/delete';
-          } else {
-            dataId = $(e.relatedTarget).data('transaction-id');
-            dataName = $(e.relatedTarget).data('transaction-number');
-
-            if ('undefined' === typeof(dataId) && 'undefined' === typeof(dataName)) {
-              return;
-            }
-            url = '/dashboard/transaction/'+dataId+'/delete';
-          }
-
-          var title = 'Do you want to delete this <strong> '+dataName+' </strong> data?';
-
-          $('#delete_confirmation_modal_content').html(title);
-          $('#delete_confirmation_modal_confirm').attr('href',url);
       });
 
       $('#status_update_confirmation_modal').on('show.bs.modal', function(e){
@@ -127,6 +100,7 @@
       })
 
       $('#transactions_tb').DataTable({
+        select     : true,
         responsive : true,
         processing : true,
         serverSide : true,
@@ -144,7 +118,39 @@
           {'data':'IS_CANCELED'},
           {'data':'IS_TRANSFERED'},
           {'data':'IS_DELIVERED'},
-        ]
+        ],
+        rowId : 'TRANSACTION_ID',
+        "dom": 'l<"H"Rf>t<"F"ip>'
+      });
+
+      $("#transactions_tb").contextmenu({
+        delegate: "td",
+        menu: [
+          {title: "View", cmd: "view", uiIcon: "ui-icon-search"},
+          {title: "Print", cmd: "print", uiIcon: "ui-icon-print"},
+          {title: "Delete", cmd: "delete", uiIcon: "ui-icon-trash"}
+        ],
+        select: function(event, ui) {
+          var rowIndex = ui.target.parent();
+          var row = $('#transactions_tb').DataTable().row(rowIndex);
+          var transactionId = row.id();
+          var transactionNumber = row.data().TRANSACTION_NUMBER;
+
+          switch (ui.cmd) {
+            case "view":
+              window.location.href = "/dashboard/transaction/"+transactionId+"/view";
+              break;
+            case "print":
+              window.location.href = "/dashboard/transaction/"+transactionId+"/print";
+              break;
+            case "delete":
+                setDeleteModalContent(transactionId, transactionNumber, "transaction");
+                $('#delete_confirmation_modal').modal('show');
+              break;
+            default:
+              break;
+          }
+        }
       });
 
       $('#items_tb').DataTable({
@@ -162,10 +168,56 @@
           {'data':'ITEM_NAME'},
           {'data':'ITEM_SIZE'},
           {'data':'ITEM_STOCK'},
-          {'data':'PRICE'},
-          // {'data':'ACTION','searchable':false,'orderable':false}
-        ]
+          {'data':'PRICE'}
+        ],
+        rowId : 'ITEM_ID',
+        "dom": 'l<"H"Rf>t<"F"ip>'
       });
+
+      $("#items_tb ").contextmenu({
+        delegate: "td",
+        menu: [
+          {title: "View", cmd: "view", uiIcon: "ui-icon-search"},
+          {title: "Edit", cmd: "print", uiIcon: "ui-icon-pencil"},
+          {title: "Delete", cmd: "delete", uiIcon: "ui-icon-trash"}
+        ],
+        select: function(event, ui) {
+          var rowIndex = ui.target.parent();
+          var row = $('#items_tb').DataTable().row(rowIndex);
+          var itemId = row.id();
+          var itemDesc = row.data().ITEM_CODE+" - "+row.data().ITEM_NAME;
+
+          switch (ui.cmd) {
+            case "view":
+              window.location.href = "/dashboard/item/"+itemId+"/view";
+              break;
+            case "print":
+              window.location.href = "/dashboard/item/form/"+itemId;
+              break;
+            case "delete":
+                setDeleteModalContent(itemId, itemDesc, "item");
+                $('#delete_confirmation_modal').modal('show');
+              break;
+            default:
+              break;
+          }
+        }
+      });
+
+      function setDeleteModalContent (dataId, dataName, dataType) {
+        var url = null;
+
+        if ("item" == dataType) {
+          url = '/dashboard/item/'+dataId+'/delete';
+        } else if ("transaction" == dataType) {
+          url = '/dashboard/transaction/'+dataId+'/delete';
+        }
+
+        var title = 'Do you want to delete this <strong> '+dataName+' </strong> data?';
+
+        $('#delete_confirmation_modal_content').html(title);
+        $('#delete_confirmation_modal_confirm').attr('href',url);
+      }
 
     });
     </script>
