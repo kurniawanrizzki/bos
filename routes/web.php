@@ -14,6 +14,19 @@
 Route::get('/',['as'=>'auth.index','uses'=>'AuthController@index']);
 Route::post('/signin',['as'=>'auth.signin','uses'=>'AuthController@signin']);
 
+Route::get('/error/{errorCode}', function($errorCode) {
+
+  $explanation = \Lang::get('string.error_default');
+
+  if ($errorCode == '505') {
+    $explanation = \Lang::get('string.internal_error');
+  } else if ($errorCode == '405') {
+    $explanation = \Lang::get('string.not_allowed_method');
+  }
+
+  return view('pages.errors.error',["errorCode"=>$errorCode, "explanation"=>$explanation]);
+})->name('error');
+
 Route::group ([
     'prefix' => 'dashboard', 'middleware' => 'auth.bos'
 ], function (){

@@ -78,5 +78,9 @@ return [
   'signout_confirmation_modal_content' => 'Do you want to sign out from this session ?',
   'confirm_button' => 'Confirm',
   'cancel_button' => 'Cancel',
-  'status_list' => ['C','T','D']
+  'status_list' => ['C','T','D'],
+  'error_default' => 'This page doesn\'t exist',
+  'internal_error' => 'Internal Server Error',
+  'not_allowed_method' => 'Method Not Allowed',
+  'goback' => 'Go to Home Page'
 ];

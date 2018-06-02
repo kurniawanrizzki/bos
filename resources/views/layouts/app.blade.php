@@ -20,7 +20,7 @@
     <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/themes/all-themes.css') }}" rel="stylesheet" />
   </head>
-  <body class="{{ !starts_with(Route::currentRouteName(),'auth')?'theme-red':'login-page' }}">
+  <body class="{{ starts_with(Route::currentRouteName(),'auth')?'login-page':(starts_with(Route::currentRouteName(),'error')?'four-zero-four':'theme-red') }}">
     @yield('content')
     <script src="{{ asset('/assets/plugins/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
