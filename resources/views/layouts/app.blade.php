@@ -14,19 +14,19 @@
     <link href="{{ asset('/assets/plugins/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/plugins/node-waves/waves.css') }}" rel="stylesheet" />
     <link href="{{ asset('/assets/plugins/animate-css/animate.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="{{'/assets/plugins/font-awesome/css/font-awesome.css'}}">
     <link href="{{ asset('/assets/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/plugins/jquery-spinner/css/bootstrap-spinner.css') }}" rel="stylesheet">
-    <link href="{{ asset('/assets/plugins/jquery-ui/jquery-ui.css') }}" rel="stylesheet" />
+    <link href="{{ asset('/assets/plugins/jquery-contextmenu/jquery.contextMenu.css') }}" rel="stylesheet" />
     <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/themes/all-themes.css') }}" rel="stylesheet" />
   </head>
   <body class="{{ starts_with(Route::currentRouteName(),'auth')?'login-page':(starts_with(Route::currentRouteName(),'error')?'four-zero-four':'theme-red') }}">
     @yield('content')
     <script src="{{ asset('/assets/plugins/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('/assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('/assets/plugins/jquery-ui/context-menu/jquery.ui-contextmenu.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ asset('/assets/plugins/node-waves/waves.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-contextmenu/jquery.contextMenu.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-validation/jquery.validate.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-spinner/js/jquery.spinner.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-datatable/jquery.dataTables.js') }}"></script>
@@ -36,6 +36,8 @@
     <script src="{{ asset('/assets/js/pages/examples/sign-in.js') }}"></script>
     <script type="text/javascript">
     $(document).ready(function() {
+
+      var isContextInitated = false;
 
       $("input[name='item_price']").simpleMoneyFormat();
       $("input[name='item_price']").on('change blur',function(){
@@ -123,32 +125,84 @@
         "dom": 'l<"H"Rf>t<"F"ip>'
       });
 
-      $("#transactions_tb").contextmenu({
-        delegate: "td",
-        menu: [
-          {title: "View", cmd: "view", uiIcon: "ui-icon-search"},
-          {title: "Print", cmd: "print", uiIcon: "ui-icon-print"},
-          {title: "Delete", cmd: "delete", uiIcon: "ui-icon-trash"}
-        ],
-        select: function(event, ui) {
-          var rowIndex = ui.target.parent();
-          var row = $('#transactions_tb').DataTable().row(rowIndex);
+      $.contextMenu({
+        selector : "#transactions_tb tr",
+        callback : function (key, options) {
+          var row = $('#transactions_tb').DataTable().row($(this).index());
           var transactionId = row.id();
           var transactionNumber = row.data().TRANSACTION_NUMBER;
-
-          switch (ui.cmd) {
+          switch (key) {
             case "view":
               window.location.href = "/dashboard/transaction/"+transactionId+"/view";
               break;
             case "print":
               window.location.href = "/dashboard/transaction/"+transactionId+"/print";
               break;
-            case "delete":
-                setDeleteModalContent(transactionId, transactionNumber, "transaction");
-                $('#delete_confirmation_modal').modal('show');
+            case "remove":
+              setDeleteModalContent(transactionId, transactionNumber, "transaction");
+              $('#delete_confirmation_modal').modal('show');
               break;
             default:
+              var text = options.$selected.find('span').text();
+              if ((text == "TRANSACTION NUMBER") || (text == "INVOICE NUMBER") || (text == "DATE") || (text == "CUSTOMER NAME") || (text == "C") || (text == "T") || (text == "D")) {
+                if ($(options.$selected).find("i").length > 0) {
+                  $(options.$selected).find("i").remove();
+                  $(options.$selected).find('span').html(text);
+                  $('#transactions_tb').DataTable().column(getTransactionColumnIndex(text)).visible(false);
+                  return;
+                }
+                $(options.$selected).append("<i class='fa fa-check' style='float:right'></i>");
+                $('#transactions_tb').DataTable().column(getTransactionColumnIndex(text)).visible(true);
+              }
               break;
+          }
+        },
+        items    : {
+          view  : {name:"View",icon:"fa-search"},
+          print : {name:"Print", icon:"fa-print"},
+          remove: {name:"Delete", icon:"fa-trash"},
+          separator : "-",
+          tools : {name:"Show / Hide Column", icon:"fa-columns", items:{
+              transactionNumber  :{name:"TRANSACTION NUMBER",icon:"fa-file-o"},
+              invoiceNumber      :{name:"INVOICE NUMBER", icon:"fa-file-o"},
+              date               :{name:"DATE",icon:"fa-file-o"},
+              client             :{name:"CUSTOMER NAME",icon:"fa-file-o"},
+              status             :{name:"STATUS",icon:"fa-files-o",items:{
+                  canceled       :{name:"C",icon:"fa-file-o"},
+                  transfered     :{name:"T",icon:"fa-file-o"},
+                  delivered      :{name:"D",icon:"fa-file-o"},
+                }
+              }
+            }
+          }
+        },
+        events:{
+          show: function (options) {
+
+            if (!isContextInitated) {
+              options.$menu.find('li').each(function(){
+                var text = $(this).find('span').text();
+                var subList = $(this).find('ul');
+
+                if (subList.length > 0) {
+                  subList.find('li').each(function(){
+                    var text = $(this).find('span').text();
+                    if ((text == "C") || (text == "T") || (text == "D")) {
+                      if ($(this).find("i").length == 0) {
+                        $(this).append("<i class='fa fa-check' style='float:right'></i>");
+                      }
+                    }
+                  });
+                }
+
+                if ((text == "TRANSACTION NUMBER") || (text == "INVOICE NUMBER") || (text == "DATE") || (text == "CUSTOMER NAME")) {
+                    $(this).append("<i class='fa fa-check' style='float:right'></i>");
+                }
+
+              });
+              isContextInitated = !isContextInitated;
+            }
+
           }
         }
       });
@@ -174,33 +228,31 @@
         "dom": 'l<"H"Rf>t<"F"ip>'
       });
 
-      $("#items_tb ").contextmenu({
-        delegate: "td",
-        menu: [
-          {title: "View", cmd: "view", uiIcon: "ui-icon-search"},
-          {title: "Edit", cmd: "print", uiIcon: "ui-icon-pencil"},
-          {title: "Delete", cmd: "delete", uiIcon: "ui-icon-trash"}
-        ],
-        select: function(event, ui) {
-          var rowIndex = ui.target.parent();
-          var row = $('#items_tb').DataTable().row(rowIndex);
+      $.contextMenu({
+        selector : "#items_tb tr",
+        callback : function (key, options) {
+          var row = $('#items_tb').DataTable().row($(this).index());
           var itemId = row.id();
           var itemDesc = row.data().ITEM_CODE+" - "+row.data().ITEM_NAME;
-
-          switch (ui.cmd) {
+          switch (key) {
             case "view":
               window.location.href = "/dashboard/item/"+itemId+"/view";
               break;
-            case "print":
+            case "edit":
               window.location.href = "/dashboard/item/form/"+itemId;
               break;
-            case "delete":
-                setDeleteModalContent(itemId, itemDesc, "item");
-                $('#delete_confirmation_modal').modal('show');
+            case "remove":
+              setDeleteModalContent(itemId, itemDesc, "item");
+              $('#delete_confirmation_modal').modal('show');
               break;
             default:
               break;
           }
+        },
+        items    : {
+          view  : {name:"View",icon:"fa-search"},
+          edit : {name:"Edit", icon:"fa-pencil"},
+          remove: {name:"Delete", icon:"fa-trash"}
         }
       });
 
@@ -217,6 +269,27 @@
 
         $('#delete_confirmation_modal_content').html(title);
         $('#delete_confirmation_modal_confirm').attr('href',url);
+      }
+
+      function getTransactionColumnIndex (index) {
+        switch (index) {
+          case "TRANSACTION NUMBER" :
+            return 0;
+          case "INVOICE NUMBER" :
+            return 1;
+          case "DATE" :
+            return 2;
+          case "CUSTOMER NAME" :
+            return 3;
+          case "C" :
+            return 4;
+          case "T" :
+            return 5;
+          case "D" :
+            return 6;
+          default:
+            return -1;
+        }
       }
 
     });

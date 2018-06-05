@@ -1,5 +1,11 @@
 ﻿/* Navbar ====================================== */
 @import url(materialize.css);
+.context-menu-list ul.context-menu-list {
+  width: 250px;
+}
+.checked {
+  float: right;
+}
 .navbar {
   font-family: "Roboto", sans-serif;
   -webkit-border-radius: 0;
