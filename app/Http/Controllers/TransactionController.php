@@ -150,6 +150,14 @@ class TransactionController extends Controller
                           ->orWhere("TRANSACTION.INVOICE_NUMBER","LIKE",$filtered)
                           ->orWhere("CLIENT.CLIENT_NAME","LIKE",$filtered);
       }
+
+      if ((null != $request->IS_CANCELED) && (null != $request->IS_TRANSFERED) && (null != $request->IS_DELIVERED)) {
+        dd($request->IS_CANCELED);
+        $transactions = $transactions->where("TRANSACTION.IS_CANCELED","=",$request->IS_CANCELED)
+                        ->where("TRANSACTION.IS_TRANSFERED","=",$request->IS_TRANSFERED)
+                        ->where("TRANSACTION.IS_DELIVERED","=",$request->IS_DELIVERED);
+      }
+
       return \DataTables::of($transactions)
               ->editColumn('IS_CANCELED', function($transactions) {
                 return $this->getStatusAttr(

@@ -207,6 +207,34 @@
         }
       });
 
+      $('.filter-btn').on('click', function(){
+        var cmd = $(this).text();
+        var isClicked = $(this).hasClass('bg-blue-grey');
+        switch (cmd) {
+          case "CANCELED":
+            buttonGroupEvent(this, isClicked, 'btn-info','bg-blue-grey');
+            break;
+          case "TRANSFERED":
+            buttonGroupEvent(this, isClicked, 'btn-info','bg-blue-grey');
+            break;
+          case "DELIVERED":
+            buttonGroupEvent(this, isClicked, 'btn-info','bg-blue-grey');
+            break;
+          default:
+            buttonGroupEvent(this, isClicked,'bg-blue-grey','btn-info');
+            $('.filter-btn').each(function(){
+              var text = $(this).text();
+              if (text != "ALL") {
+                $(this).removeClass('bg-blue-grey');
+                $(this).addClass('btn-info');
+              }
+            });
+            break;
+
+        }
+        searchByStatus();
+      });
+
       $('#items_tb').DataTable({
         responsive : true,
         processing : true,
@@ -290,6 +318,48 @@
           default:
             return -1;
         }
+      }
+
+      function buttonGroupEvent (component, isClicked, defaultColor, clickedColor) {
+        if (isClicked) {
+          $(component).removeClass(clickedColor);
+          $(component).addClass(defaultColor);
+          return;
+        }
+        $(component).removeClass(defaultColor);
+        $(component).addClass(clickedColor);
+
+        var allButton = $('.filter-btn')[0];
+        if ($(allButton).hasClass(clickedColor)) {
+          $(allButton).removeClass(clickedColor);
+          $(allButton).addClass(defaultColor);
+        }
+      }
+
+      function searchByStatus () {
+
+        var allButton = $('.filter-btn')[0];
+        var columnIndex = 3;
+        var dTable = $('#transactions_tb').DataTable();
+
+        if (!$(allButton).hasClass('bg-blue-grey')) {
+          $('.filter-btn').each(function(){
+            var cmd = $(this).text();
+
+            if ($(this).hasClass('bg-blue-grey')) {
+              dTable.column(columnIndex).search(1);
+            } else {
+              if (cmd != 'ALL') {
+                dTable.column(columnIndex).search(0);
+              }
+            }
+            columnIndex++;
+
+          });
+          dTable.draw();
+          return;
+        }
+        dTable.search( '' ).columns().search( '' ).draw();
       }
 
     });

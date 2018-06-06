@@ -10,9 +10,28 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
                     <div class="header">
-                        <h2>
-                            {{ trans('string.transaction_tb_title') }}
-                        </h2>
+                      <div class="row clearfix">
+                        <div class="col-md-3">
+                          <h2>
+                              {{ trans('string.transaction_tb_title') }}
+                          </h2>
+                        </div>
+                        <div class="col-md-9">
+                          <div class="pull-right">
+                            {!! Form::label('status',trans('string.transactions_table')[4],['class'=>'form-label','style'=>'font-color:#111;']) !!}
+                            <div class="input-group">
+                              <div class="form-line">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn bg-blue-grey waves-effect filter-btn">ALL</button>
+                                    <button type="button" class="btn btn-info waves-effect filter-btn">CANCELED</button>
+                                    <button type="button" class="btn btn-info waves-effect filter-btn">TRANSFERED</button>
+                                    <button type="button" class="btn btn-info waves-effect filter-btn">DELIVERED</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div class="body table-responsive" style="min-height:235px;">
                         <table class="table table-bordered table-striped table-hover dataTable" id="transactions_tb" width="100%">
