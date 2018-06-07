@@ -106,6 +106,7 @@
         responsive : true,
         processing : true,
         serverSide : true,
+        order      : [1,'asc'],
         ajax       : {
           type     : 'POST',
           url      : "{{ route('api.transactions') }}",
@@ -113,6 +114,7 @@
           data    : { token:"{{ \Session::get('token') }}"},
         },
         columns    : [
+          {'data':'TRANSACTION_SELECTION','orderable':false,'searchable':false},
           {'data':'TRANSACTION_NUMBER'},
           {'data':'INVOICE_NUMBER'},
           {'data':'TRANSACTION_DATE'},
@@ -125,6 +127,17 @@
         "dom": 'l<"H"Rf>t<"F"ip>'
       });
 
+      $('#print_all_selection').on('click', function(){
+        var rows = $('#transactions_tb').DataTable().rows({'search':'applied'}).nodes();
+        $('input[type="checkbox"]', rows).prop('checked', this.checked);
+      });
+
+      $('#transactions_tb').on('change','input[type="checkbox"]', function(){
+        if (!this.checked) {
+          var el = $('#print_all_selection').prop('checked',false);
+        }
+      });
+
       $.contextMenu({
         selector : "#transactions_tb tr",
         callback : function (key, options) {
@@ -135,8 +148,8 @@
             case "view":
               window.location.href = "/dashboard/transaction/"+transactionId+"/view";
               break;
-            case "print":
-              window.location.href = "/dashboard/transaction/"+transactionId+"/print";
+            case "prints":
+              window.location.href = "/dashboard/transaction/print?transactionIds="+buildTransactionIds();
               break;
             case "remove":
               setDeleteModalContent(transactionId, transactionNumber, "transaction");
@@ -159,7 +172,10 @@
         },
         items    : {
           view  : {name:"View",icon:"fa-search"},
-          print : {name:"Print", icon:"fa-print"},
+          prints: {name:"Print", icon:"fa-print",disabled:function(key,opt){
+              return disablePrintSelection();
+            }
+          },
           remove: {name:"Delete", icon:"fa-trash"},
           separator : "-",
           tools : {name:"Show / Hide Column", icon:"fa-columns", items:{
@@ -360,6 +376,28 @@
           return;
         }
         dTable.search( '' ).columns().search( '' ).draw();
+      }
+
+      function disablePrintSelection () {
+        var disable = true;
+        var rows = $('#transactions_tb').DataTable().rows({'search':'applied'}).nodes();
+        $('input[type="checkbox"]', rows).each(function() {
+          if (this.checked) {
+            disable = false;
+          }
+        });
+        return disable;
+      }
+
+      function buildTransactionIds () {
+        var transactionIds = [];
+        var rows = $('#transactions_tb').DataTable().rows({'search':'applied'}).nodes();
+        $('input[type="checkbox"]', rows).each(function() {
+          if (this.checked) {
+            transactionIds.push($(this).val());
+          }
+        });
+        return JSON.stringify(transactionIds);
       }
 
     });

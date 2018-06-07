@@ -78,24 +78,41 @@ class TransactionController extends Controller
 
     }
 
-    public function print ($transactionId) {
-      $token = Session::get('token');
-      $transactionById  = $this->getList($transactionId, $this->getUserId($token))->get();
-      $orderByTransactionId = $this->getOrdersDetail($transactionId);
+    public function print () {
 
-      if (sizeof($transactionById) > 0) {
+      $encodeTransactionIds = Input::get('transactionIds');
 
-          $pdf = PDF::loadView('layouts.invoice', [
-            'transaction'=>$transactionById,
-            'orders'=>$orderByTransactionId
-          ]);
+      if (!empty($encodeTransactionIds)) {
+        $transactionIds = json_decode($encodeTransactionIds);
+        $transactions = $this->buildPrintedData($transactionIds);
 
-          $customPaper = array(0,0,567.00,283.80);
-          $pdf->setPaper($customPaper, 'portrait')->setWarnings(false);
-          return $pdf->download();
+        if (sizeof($transactions) > 0) {
 
+            $pdf = PDF::loadView('layouts.invoice', [
+              'transactions'=>$transactions
+            ]);
+
+            $customPaper = array(0,0,567.00,283.80);
+            $pdf->setPaper($customPaper, 'portrait')->setWarnings(false);
+            return $pdf->download();
+
+        }
       }
 
+    }
+
+    protected function buildPrintedData ($transactionIds) {
+      $i = 0;
+      $transactions = [];
+      $userId = $this->getUserId(Session::get('token'));
+      if (null != $userId) {
+        foreach ($transactionIds as $transactionId) {
+          $transactions[$i]['transaction'] = $this->getList($transactionId, $userId)->get();
+          $transactions[$i]['orders'] = $this->getOrdersDetail($transactionId);
+          $i++;
+        }
+      }
+      return $transactions;
     }
 
     protected function getList ($transactionId,$userId) {
@@ -114,17 +131,7 @@ class TransactionController extends Controller
                        "CLIENT.CLIENT_HP as HP",
                        "TRANSACTION.IS_DELIVERED",
                        "TRANSACTION.IS_TRANSFERED",
-                       "TRANSACTION.IS_CANCELED",
-                       \Illuminate\Support\Facades\DB::raw(
-                          "(CASE ".
-                            "WHEN ((TRANSACTION.IS_TRANSFERED = 1) && (TRANSACTION.IS_DELIVERED = 1) && (TRANSACTION.IS_CANCELED = 0)) THEN 4 ". //already delivered
-                            "WHEN ((TRANSACTION.IS_TRANSFERED = 1) && (TRANSACTION.IS_DELIVERED = 0) && (TRANSACTION.IS_CANCELED = 0)) THEN 3 ". //already transfered
-                            "WHEN ((TRANSACTION.IS_TRANSFERED = 1) && (TRANSACTION.IS_DELIVERED = 0) && (TRANSACTION.IS_CANCELED = 1)) THEN 2 ". //canceled but already transfered
-                            "WHEN ((TRANSACTION.IS_TRANSFERED = 0) && (TRANSACTION.IS_DELIVERED = 0) && (TRANSACTION.IS_CANCELED = 1)) THEN 1 ". //canceled
-                            "WHEN ((TRANSACTION.IS_TRANSFERED = 0) && (TRANSACTION.IS_DELIVERED = 0) && (TRANSACTION.IS_CANCELED = 0)) THEN 0 ". //waiting
-                            "ELSE -1 ".//unknown
-                          "END) AS STATUS"
-                       )
+                       "TRANSACTION.IS_CANCELED"
                       )
                       ->join('CLIENT','CLIENT.CLIENT_ID','=','TRANSACTION.CLIENT_ID')
                       ->where('TRANSACTION.USER_ID','=',$userId);
@@ -183,7 +190,10 @@ class TransactionController extends Controller
                   2
                 );
               })
-              ->rawColumns(["IS_CANCELED","IS_TRANSFERED","IS_DELIVERED"])
+              ->addColumn('TRANSACTION_SELECTION', function($transactions){
+                return '<input type="checkbox" id="print_selection_'.$transactions->TRANSACTION_ID.'" value="'.$transactions->TRANSACTION_ID.'" class="filled-in"/><label for="print_selection_'.$transactions->TRANSACTION_ID.'"></label>';
+              })
+              ->rawColumns(["IS_CANCELED","IS_TRANSFERED","IS_DELIVERED","TRANSACTION_SELECTION"])
               ->make();
     }
 

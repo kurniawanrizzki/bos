@@ -40,7 +40,7 @@ Route::group ([
       Route::get('/',['as'=>'transaction.index', 'uses'=>'TransactionController@index']);
       Route::get('/{id}/view', ['as'=>'transaction.view','uses'=>'TransactionController@view']);
       Route::get('/{id}/delete',['as'=>'transaction.delete','uses'=>'TransactionController@delete']);
-      Route::get('/{id}/print',['as'=>'transaction.print','uses'=>'TransactionController@print']);
+      Route::get('/print',['as'=>'transaction.print','uses'=>'TransactionController@print']);
 
   });
 

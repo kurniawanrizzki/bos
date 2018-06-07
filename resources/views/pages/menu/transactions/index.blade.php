@@ -22,10 +22,10 @@
                             <div class="input-group">
                               <div class="form-line">
                                 <div class="btn-group" role="group">
-                                    <button type="button" class="btn bg-blue-grey waves-effect filter-btn">ALL</button>
-                                    <button type="button" class="btn btn-info waves-effect filter-btn">CANCELED</button>
-                                    <button type="button" class="btn btn-info waves-effect filter-btn">TRANSFERED</button>
-                                    <button type="button" class="btn btn-info waves-effect filter-btn">DELIVERED</button>
+                                    <button type="button" class="btn bg-blue-grey waves-effect filter-btn">{{ trans('string.all_status') }}</button>
+                                    <button type="button" class="btn btn-info waves-effect filter-btn">{{ trans('string.canceled_status') }}</button>
+                                    <button type="button" class="btn btn-info waves-effect filter-btn">{{ trans('string.transfered_status') }}</button>
+                                    <button type="button" class="btn btn-info waves-effect filter-btn">{{ trans('string.delivered_status') }}</button>
                                 </div>
                               </div>
                             </div>
@@ -37,6 +37,10 @@
                         <table class="table table-bordered table-striped table-hover dataTable" id="transactions_tb" width="100%">
                           <thead>
                             <tr>
+                              <th rowspan="2">
+                                <input type="checkbox" id="print_all_selection" value="0" class="filled-in"/>
+                                <label for="print_all_selection"></label>
+                              </th>
                               @foreach(trans('string.transactions_table') as $title)
                                 @if($title != 'STATUS')
                                   <th rowspan="2">{{$title}}</th>

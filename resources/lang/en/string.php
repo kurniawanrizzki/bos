@@ -49,6 +49,7 @@ return [
   'canceled_status' => 'CANCELED',
   'paid_canceled_status' => 'CANCELED (WAS TRANSFERED)',
   'unknown_status' => 'UNKNOWN',
+  'all_status' => 'ALL',
   'transaction_detailed' => 'Transaction Detail For <strong> :number </strong>',
   'detailed_transaction' => 'DETAILED TRANSACTION',
   'detailed_transaction_description' => 'This section will describe detail transaction of  <strong> :number </strong>.',
