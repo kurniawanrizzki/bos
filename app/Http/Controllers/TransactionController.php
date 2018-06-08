@@ -93,7 +93,7 @@ class TransactionController extends Controller
             ]);
 
             $pdf->setPaper('a4', 'portrait')->setWarnings(false);
-            return $pdf->download();
+            return $pdf->stream();
 
         }
       }
@@ -148,58 +148,66 @@ class TransactionController extends Controller
       $this->validate($request, Config::get('app.request_rule'));
       $userId = $this->getUserId($request->token);
 
-      $transactions = $this->getList(null,$userId);
-      $search = Input::get('search.value');
-      if (!empty($search)) {
-          $filtered = "%".$search."%";
-          $transactions = $transactions->where("TRANSACTION.TRANSACTION_NUMBER","LIKE",$filtered)
-                          ->orWhere("TRANSACTION.INVOICE_NUMBER","LIKE",$filtered)
-                          ->orWhere("CLIENT.CLIENT_NAME","LIKE",$filtered);
+      if (null != $userId) {
+        $transactions = $this->getList(null,$userId);
+        $search = Input::get('search.value');
+        if (!empty($search)) {
+            $filtered = "%".$search."%";
+            $transactions = $transactions->where("TRANSACTION.TRANSACTION_NUMBER","LIKE",$filtered)
+                            ->orWhere("TRANSACTION.INVOICE_NUMBER","LIKE",$filtered)
+                            ->orWhere("CLIENT.CLIENT_NAME","LIKE",$filtered);
+        }
+
+        if ((null != $request->IS_CANCELED) && (null != $request->IS_TRANSFERED) && (null != $request->IS_DELIVERED)) {
+          dd($request->IS_CANCELED);
+          $transactions = $transactions->where("TRANSACTION.IS_CANCELED","=",$request->IS_CANCELED)
+                          ->where("TRANSACTION.IS_TRANSFERED","=",$request->IS_TRANSFERED)
+                          ->where("TRANSACTION.IS_DELIVERED","=",$request->IS_DELIVERED);
+        }
+
+        return \DataTables::of($transactions)
+                ->editColumn('IS_CANCELED', function($transactions) {
+                  return $this->getStatusAttr(
+                    $transactions->TRANSACTION_ID,
+                    $transactions->IS_CANCELED,
+                    $transactions->TRANSACTION_NUMBER,
+                    0
+                  );
+                })
+                ->editColumn('IS_TRANSFERED', function($transactions){
+                  return $this->getStatusAttr(
+                    $transactions->TRANSACTION_ID,
+                    $transactions->IS_TRANSFERED,
+                    $transactions->TRANSACTION_NUMBER,
+                    1
+                  );
+                })
+                ->editColumn('IS_DELIVERED', function($transactions){
+                  return $this->getStatusAttr(
+                    $transactions->TRANSACTION_ID,
+                    $transactions->IS_DELIVERED,
+                    $transactions->TRANSACTION_NUMBER,
+                    2
+                  );
+                })
+                ->editColumn('TRANSACTION_NUMBER',function($transactions){
+                  return '<strong>'.$transactions->TRANSACTION_NUMBER.'</strong>';
+                })
+                ->editColumn('INVOICE_NUMBER', function($transactions) {
+                  return null != $transactions->INVOICE_NUMBER?'<strong>'.$transactions->INVOICE_NUMBER.'</strong>':'<strong><i>'.Lang::get('string.unavailable').'</i></strong>';
+                })
+                ->addColumn('TRANSACTION_SELECTION', function($transactions){
+                  return '<input type="checkbox" id="print_selection_'.$transactions->TRANSACTION_ID.'" value="'.$transactions->TRANSACTION_ID.'" class="filled-in"/><label for="print_selection_'.$transactions->TRANSACTION_ID.'"></label>';
+                })
+                ->rawColumns(["IS_CANCELED","IS_TRANSFERED","IS_DELIVERED","TRANSACTION_SELECTION","INVOICE_NUMBER","TRANSACTION_NUMBER"])
+                ->make();
+
       }
 
-      if ((null != $request->IS_CANCELED) && (null != $request->IS_TRANSFERED) && (null != $request->IS_DELIVERED)) {
-        dd($request->IS_CANCELED);
-        $transactions = $transactions->where("TRANSACTION.IS_CANCELED","=",$request->IS_CANCELED)
-                        ->where("TRANSACTION.IS_TRANSFERED","=",$request->IS_TRANSFERED)
-                        ->where("TRANSACTION.IS_DELIVERED","=",$request->IS_DELIVERED);
-      }
-
-      return \DataTables::of($transactions)
-              ->editColumn('IS_CANCELED', function($transactions) {
-                return $this->getStatusAttr(
-                  $transactions->TRANSACTION_ID,
-                  $transactions->IS_CANCELED,
-                  $transactions->TRANSACTION_NUMBER,
-                  0
-                );
-              })
-              ->editColumn('IS_TRANSFERED', function($transactions){
-                return $this->getStatusAttr(
-                  $transactions->TRANSACTION_ID,
-                  $transactions->IS_TRANSFERED,
-                  $transactions->TRANSACTION_NUMBER,
-                  1
-                );
-              })
-              ->editColumn('IS_DELIVERED', function($transactions){
-                return $this->getStatusAttr(
-                  $transactions->TRANSACTION_ID,
-                  $transactions->IS_DELIVERED,
-                  $transactions->TRANSACTION_NUMBER,
-                  2
-                );
-              })
-              ->editColumn('TRANSACTION_NUMBER',function($transactions){
-                return '<strong>'.$transactions->TRANSACTION_NUMBER.'</strong>';
-              })
-              ->editColumn('INVOICE_NUMBER', function($transactions) {
-                return null != $transactions->INVOICE_NUMBER?'<strong>'.$transactions->INVOICE_NUMBER.'</strong>':'<strong><i>'.Lang::get('string.unavailable').'</i></strong>';
-              })
-              ->addColumn('TRANSACTION_SELECTION', function($transactions){
-                return '<input type="checkbox" id="print_selection_'.$transactions->TRANSACTION_ID.'" value="'.$transactions->TRANSACTION_ID.'" class="filled-in"/><label for="print_selection_'.$transactions->TRANSACTION_ID.'"></label>';
-              })
-              ->rawColumns(["IS_CANCELED","IS_TRANSFERED","IS_DELIVERED","TRANSACTION_SELECTION","INVOICE_NUMBER","TRANSACTION_NUMBER"])
-              ->make();
+      return response()->json([
+        'reason' => Lang::get('validation.token_is_not_validated'),
+        'data' => []
+      ]);
     }
 
     protected function getStatusAttr ($id, $value, $desc, $type) {

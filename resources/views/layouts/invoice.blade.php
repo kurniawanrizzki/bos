@@ -37,7 +37,7 @@
       <tr>
         <th class="border-col-body" width="10%">FROM</th>
         <td width="60%" class="border-col-body">{{ \Session::get('name') }}</td>
-        <td class="border-col-body" align="center">{{ $item['transaction'][0]->SHIPPING_TOTAL_WEIGHT." (Shipping : ".$item['transaction'][0]->SHIPPING_TYPE.") " }}</td>
+        <td class="border-col-body" align="center">{{ $item['transaction'][0]->SHIPPING_TOTAL_WEIGHT." Kg (Shipping : ".$item['transaction'][0]->SHIPPING_TYPE.") " }}</td>
       </tr>
       <tr>
         <th rowspan="4">TO</th>

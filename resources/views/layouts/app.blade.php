@@ -112,6 +112,15 @@
           url      : "{{ route('api.transactions') }}",
           dataType : 'json',
           data    : { token:"{{ \Session::get('token') }}"},
+          dataSrc : function (res) {
+            if (typeof res.reason !== 'undefined') {
+              $('#signout_cancel_button').remove();
+              $('#signout_confirmation_modal_content').html(res.reason);
+              $('#signout_confirmation_modal').modal({backdrop: 'static', keyboard: false});
+              $('#signout_confirmation_modal').modal('show');
+            }
+            return res.data;
+          }
         },
         columns    : [
           {'data':'TRANSACTION_SELECTION','orderable':false,'searchable':false},
@@ -157,15 +166,22 @@
               break;
             default:
               var text = options.$selected.find('span').text();
+              var transactionColumnIndex = getTransactionColumnIndex(text);
               if ((text == "TRANSACTION NUMBER") || (text == "INVOICE NUMBER") || (text == "DATE") || (text == "CUSTOMER NAME") || (text == "C") || (text == "T") || (text == "D")) {
                 if ($(options.$selected).find("i").length > 0) {
                   $(options.$selected).find("i").remove();
                   $(options.$selected).find('span').html(text);
-                  $('#transactions_tb').DataTable().column(getTransactionColumnIndex(text)).visible(false);
+                  if (transactionColumnIndex == 1) {
+                    $('#transactions_tb').DataTable().column(0).visible(false);
+                  }
+                  $('#transactions_tb').DataTable().column(transactionColumnIndex).visible(false);
                   return;
                 }
                 $(options.$selected).append("<i class='fa fa-check' style='float:right'></i>");
-                $('#transactions_tb').DataTable().column(getTransactionColumnIndex(text)).visible(true);
+                if (transactionColumnIndex == 1) {
+                  $('#transactions_tb').DataTable().column(0).visible(true);
+                }
+                $('#transactions_tb').DataTable().column(transactionColumnIndex).visible(true);
               }
               break;
           }
@@ -260,6 +276,15 @@
           url      : "{{ route('api.items') }}",
           dataType : 'json',
           data     : { token:"{{ \Session::get('token') }}"},
+          dataSrc  : function (res) {
+            if (typeof res.reason !== 'undefined') {
+              $('#signout_cancel_button').remove();
+              $('#signout_confirmation_modal_content').html(res.reason);
+              $('#signout_confirmation_modal').modal({backdrop: 'static', keyboard: false});
+              $('#signout_confirmation_modal').modal('show');
+            }
+            return res.data;
+          }
         },
         columns    : [
           {'data':'ITEM_CODE'},
@@ -318,19 +343,19 @@
       function getTransactionColumnIndex (index) {
         switch (index) {
           case "TRANSACTION NUMBER" :
-            return 0;
-          case "INVOICE NUMBER" :
             return 1;
-          case "DATE" :
+          case "INVOICE NUMBER" :
             return 2;
-          case "CUSTOMER NAME" :
+          case "DATE" :
             return 3;
-          case "C" :
+          case "CUSTOMER NAME" :
             return 4;
-          case "T" :
+          case "C" :
             return 5;
-          case "D" :
+          case "T" :
             return 6;
+          case "D" :
+            return 7;
           default:
             return -1;
         }
@@ -355,7 +380,7 @@
       function searchByStatus () {
 
         var allButton = $('.filter-btn')[0];
-        var columnIndex = 3;
+        var columnIndex = 4;
         var dTable = $('#transactions_tb').DataTable();
 
         if (!$(allButton).hasClass('bg-blue-grey')) {

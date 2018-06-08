@@ -31,8 +31,8 @@
                 {{ trans('string.signout_confirmation_modal_content') }}
               </div>
               <div class="modal-footer">
-                  <a class="btn btn-link waves-effect" id="delete_confirmation_modal_confirm" href="{{ route('auth.signout') }}">{{ trans('string.confirm_button') }}</a>
-                  <button type="button" class="btn btn-link waves-effect" data-dismiss="modal">{{ trans('string.cancel_button') }}</button>
+                  <a class="btn btn-link waves-effect" id="signout_confirmation_modal_confirm" href="{{ route('auth.signout') }}">{{ trans('string.confirm_button') }}</a>
+                  <button type="button" id="signout_cancel_button" class="btn btn-link waves-effect" data-dismiss="modal">{{ trans('string.cancel_button') }}</button>
               </div>
           </div>
       </div>

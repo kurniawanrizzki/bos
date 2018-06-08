@@ -58,40 +58,46 @@ class ItemController extends Controller
     public function getItemList (Request $request) {
 
         $this->validate($request, Config::get('app.request_rule'));
-
         $userId = $this->getUserId($request->token);
 
-        $search = Input::get('search.value');
-        $items = Item::where('USER_ID','=',$userId);
+        if (null != $userId) {
+          $search = Input::get('search.value');
+          $items = Item::where('USER_ID','=',$userId);
 
-        if (!empty($search)) {
-          $filtered = "%".$search."%";
-          $items = $items->where('ITEM_NAME','LIKE',$filtered)
-                  ->orWhere('ITEM_CODE','LIKE',$filtered)
-                  ->orWhere('ITEM_DESC','LIKE',$filtered)
-                  ->orwhere('ITEM_STOCK','LIKE',$filtered)
-                  ->orwhere('ITEM_SIZE','LIKE',$filtered)
-                  ->orwhere('ITEM_PRICE','LIKE',$filtered);
+          if (!empty($search)) {
+            $filtered = "%".$search."%";
+            $items = $items->where('ITEM_NAME','LIKE',$filtered)
+                    ->orWhere('ITEM_CODE','LIKE',$filtered)
+                    ->orWhere('ITEM_DESC','LIKE',$filtered)
+                    ->orwhere('ITEM_STOCK','LIKE',$filtered)
+                    ->orwhere('ITEM_SIZE','LIKE',$filtered)
+                    ->orwhere('ITEM_PRICE','LIKE',$filtered);
 
+          }
+
+          return \DataTables::of($items)
+                ->addColumn('PRICE', function($items){
+                  return \Config::get('app.applied_curency').number_format($items->ITEM_PRICE, 2);
+                })
+                ->addColumn('ACTION', function($items){
+                  return '<a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route('item.view',[$items->ITEM_ID]).'">
+                              <i class="material-icons">search</i>
+                          </a>
+                          <a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route('item.form',[$items->ITEM_ID]).'">
+                              <i class="material-icons">edit</i>
+                          </a>
+                          <a class="btn bg-red btn-circle waves-effect waves-circle waves-float" data-toggle="modal" data-product-id="'.$items->ITEM_ID.'" data-product-name="'.$items->ITEM_CODE.' - '.$items->ITEM_NAME.'" data-target="#delete_confirmation_modal">
+                              <i class="material-icons">delete</i>
+                          </a>';
+                })
+                ->rawColumns(['ACTION','PRICE'])
+                ->make();
         }
 
-        return \DataTables::of($items)
-              ->addColumn('PRICE', function($items){
-                return \Config::get('app.applied_curency').number_format($items->ITEM_PRICE, 2);
-              })
-              ->addColumn('ACTION', function($items){
-                return '<a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route('item.view',[$items->ITEM_ID]).'">
-                            <i class="material-icons">search</i>
-                        </a>
-                        <a class="btn bg-green btn-circle waves-effect waves-circle waves-float" href="'.route('item.form',[$items->ITEM_ID]).'">
-                            <i class="material-icons">edit</i>
-                        </a>
-                        <a class="btn bg-red btn-circle waves-effect waves-circle waves-float" data-toggle="modal" data-product-id="'.$items->ITEM_ID.'" data-product-name="'.$items->ITEM_CODE.' - '.$items->ITEM_NAME.'" data-target="#delete_confirmation_modal">
-                            <i class="material-icons">delete</i>
-                        </a>';
-              })
-              ->rawColumns(['ACTION','PRICE'])
-              ->make();
+        return response()->json([
+          'reason' => Lang::get('validation.token_is_not_validated'),
+          'data' => []
+        ]);
     }
 
     protected function buildRequestParameters (Request $request) {
