@@ -92,8 +92,7 @@ class TransactionController extends Controller
               'transactions'=>$transactions
             ]);
 
-            $customPaper = array(0,0,567.00,283.80);
-            $pdf->setPaper($customPaper, 'portrait')->setWarnings(false);
+            $pdf->setPaper('a4', 'portrait')->setWarnings(false);
             return $pdf->download();
 
         }
@@ -190,10 +189,16 @@ class TransactionController extends Controller
                   2
                 );
               })
+              ->editColumn('TRANSACTION_NUMBER',function($transactions){
+                return '<strong>'.$transactions->TRANSACTION_NUMBER.'</strong>';
+              })
+              ->editColumn('INVOICE_NUMBER', function($transactions) {
+                return null != $transactions->INVOICE_NUMBER?'<strong>'.$transactions->INVOICE_NUMBER.'</strong>':'<strong><i>'.Lang::get('string.unavailable').'</i></strong>';
+              })
               ->addColumn('TRANSACTION_SELECTION', function($transactions){
                 return '<input type="checkbox" id="print_selection_'.$transactions->TRANSACTION_ID.'" value="'.$transactions->TRANSACTION_ID.'" class="filled-in"/><label for="print_selection_'.$transactions->TRANSACTION_ID.'"></label>';
               })
-              ->rawColumns(["IS_CANCELED","IS_TRANSFERED","IS_DELIVERED","TRANSACTION_SELECTION"])
+              ->rawColumns(["IS_CANCELED","IS_TRANSFERED","IS_DELIVERED","TRANSACTION_SELECTION","INVOICE_NUMBER","TRANSACTION_NUMBER"])
               ->make();
     }
 
