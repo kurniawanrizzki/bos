@@ -141,6 +141,10 @@
         $('input[type="checkbox"]', rows).prop('checked', this.checked);
       });
 
+      $('#printwarning_confirmation_modal_confirm').on('click',function(){
+        $('#printwarning_confirmation_modal').modal('hide');
+      });
+
       $('#transactions_tb').on('change','input[type="checkbox"]', function(){
         if (!this.checked) {
           var el = $('#print_all_selection').prop('checked',false);
@@ -158,7 +162,19 @@
               window.location.href = "/dashboard/transaction/"+transactionId+"/view";
               break;
             case "prints":
-              window.location.href = "/dashboard/transaction/print?transactionIds="+buildTransactionIds();
+              var ids = buildTransactionIds();
+              var warn = ids.warning;
+              var url = "/dashboard/transaction/print?transactionIds="+JSON.stringify(ids.ids);
+              if (warn.length > 0) {
+                $('#printwarning_confirmation_modal_confirm').attr('href',url);
+                $('#warning_details_collapse_content').append(
+                  buildDetailWarningPrintContent(warn)
+                );
+                $('#printwarning_confirmation_modal_content').append("<br><br> <a class='waves-effect' data-toggle='collapse' href='#warning_details_collapse' aria-expanded='false' aria-controls='warningDetails'>Details</a>");
+                $('#printwarning_confirmation_modal').modal('show');
+                return;
+              }
+              window.location.href = url;
               break;
             case "remove":
               setDeleteModalContent(transactionId, transactionNumber, "transaction");
@@ -415,17 +431,59 @@
       }
 
       function buildTransactionIds () {
-        var transactionIds = [];
+        var transactionIds = {
+          ids:[],
+          warning:[]
+        };
         var rows = $('#transactions_tb').DataTable().rows({'search':'applied'}).nodes();
-        $('input[type="checkbox"]', rows).each(function() {
-          if (this.checked) {
-            transactionIds.push($(this).val());
+        for (var index = 0;index < rows.length;index++) {
+          var row  = rows[index];
+          var data = rows.data()[index];
+          var el = $(row).find('input[type="checkbox"]')[0];
+
+          if (el.checked) {
+            var value = $(el).val();
+            var isCanceled = $(data.IS_CANCELED).first().attr('data-transaction-value') == 0?false:true;
+            var isTransfered = $(data.IS_TRANSFERED).first().attr('data-transaction-value') == 0?false:true;
+            var isDelivered = $(data.IS_DELIVERED).first().attr('data-transaction-value') ==  0?false:true;
+            transactionIds.ids.push(value);
+            if (isCanceled || !isTransfered) {
+              transactionIds.warning.push({
+                transactionNumber:data.TRANSACTION_NUMBER,
+                canceled:isCanceled,
+                transfered:isTransfered,
+                delivered:isDelivered
+              });
+            }
           }
-        });
-        return JSON.stringify(transactionIds);
+
+        }
+
+        return transactionIds;
       }
 
     });
+
+    function buildDetailWarningPrintContent (warns) {
+      var warnHtml = "<table width='100%'>"+
+      "<tr>"+
+        "<th>TRANSACTION NUMBER</th>"+
+        "<th>C</th>"+
+        "<th>T</th>"+
+        "<th>D</th"+
+      "</tr>";
+      warns.forEach(function(warnItems) {
+        warnHtml += "<tr>"+
+        "<td>"+warnItems.transactionNumber+"</td>"+
+        "<td><i class='"+(warnItems.canceled?"fa fa-check":"fa fa-times")+"'></i></td>"+
+        "<td><i class='"+(warnItems.transfered?"fa fa-check":"fa fa-times")+"'></i></td>"+
+        "<td><i class='"+(warnItems.delivered?"fa fa-check":"fa fa-times")+"'></i></td>"+
+        "</tr>";
+      });
+      warnHtml += "</table>";
+      return warnHtml;
+    }
+
     </script>
   </body>
 </html>

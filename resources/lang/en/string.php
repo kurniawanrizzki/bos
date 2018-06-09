@@ -77,6 +77,7 @@ return [
   ],
   'confirmation_modal_title' => ':title Confirmation',
   'signout_confirmation_modal_content' => 'Do you want to sign out from this session ?',
+  'printwarning_confirmation_modal_content' => 'There is/are not qualified transaction(s), Do you want to continue this action?',
   'confirm_button' => 'Confirm',
   'cancel_button' => 'Cancel',
   'status_list' => ['C','T','D'],
