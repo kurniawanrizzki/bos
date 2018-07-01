@@ -49,7 +49,10 @@ class ItemController extends Controller
     }
 
     public function update (Request $request) {
-      $this->validate ($request,Config::get('app.item_rule'), Lang::get('validation.item_validation_messages'));
+      $rules = Config::get('app.item_rule');
+      $rules['item_code'] = $rules['item_code'].",".$request->item_id.",ITEM_ID";
+      $rules['item_name'] = $rules['item_name'].",".$request->item_id.",ITEM_ID";
+      $this->validate ($request,$rules, Lang::get('validation.item_validation_messages'));
       $parameter = $this->buildRequestParameters($request);
       Item::where('ITEM_ID',$parameter['ITEM_ID'])->update($parameter);
       return redirect()->route('item.index');

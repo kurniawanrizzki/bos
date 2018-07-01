@@ -7,8 +7,9 @@
       'required' => 'Fill your :attribute credential into this field'
     ],
     'item_validation_messages' => [
-      'required' => 'Fill :attribute product into this field',
-      'numeric' => 'Fill :attribute product with only numeric'
+      'required' => 'Fill :attribute product into this field.',
+      'numeric' => 'Fill :attribute product with only numeric.',
+      'unique' => 'Product :attribute for those value has been existed, Please fill it with another.'
     ]
   ]
 

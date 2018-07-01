@@ -28,7 +28,7 @@
                                 @if(null !== $errors->first('item_code'))
                                   <span style="color:#F44336;font-size:12px;"> <strong>{{ $errors->first('item_code') }}</strong> </span>
                                 @endif
-                                <div class="form-group form-float">
+                                <div class="form-group form-float" {{ (null !== $errors->first('item_code')?'style=margin-top:10px;':'') }}>
                                     <div class="form-line">
                                         @if(isset($item))
                                           {!! Form::hidden('item_id',isset($item)?$item->ITEM_ID:'',['class'=>'form-control']) !!}
@@ -44,7 +44,7 @@
                               @if(null !== $errors->first('item_name'))
                                 <span style="color:#F44336;font-size:12px;"> <strong>{{ $errors->first('item_name') }}</strong> </span>
                               @endif
-                              <div class="form-group form-float">
+                              <div class="form-group form-float" {{ (null !== $errors->first('item_name')?'style=margin-top:10px;':'') }}>
                                   <div class="form-line">
                                       {!! Form::text('item_name',isset($item)?$item->ITEM_NAME:old('item_name'),['class'=>'form-control','required']) !!}
                                       {!! Form::label('item_name',trans('string.item_detail_component')[1],['class'=>'form-label']) !!}
@@ -57,7 +57,7 @@
                               @if(null !== $errors->first('item_desc'))
                                 <span style="color:#F44336;font-size:12px;"> <strong>{{ $errors->first('item_desc') }}</strong> </span>
                               @endif
-                              <div class="form-group form-float">
+                              <div class="form-group form-float" {{ (null !== $errors->first('item_desc')?'style=margin-top:10px;':'') }}>
                                   <div class="form-line">
                                       {!! Form::textarea('item_desc',isset($item)?$item->ITEM_DESC:old('item_desc'),['class'=>'form-control no-resize','rows'=>4,'required']) !!}
                                       {!! Form::label('item_desc',trans('string.item_detail_component')[2],['class'=>'form-label']) !!}
