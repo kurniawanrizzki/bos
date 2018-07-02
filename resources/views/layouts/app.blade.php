@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{{'/assets/plugins/font-awesome/css/font-awesome.css'}}">
     <link href="{{ asset('/assets/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/plugins/jquery-spinner/css/bootstrap-spinner.css') }}" rel="stylesheet">
+    <link href="{{ asset('/assets/plugins/jquery-datetimepicker/build/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/plugins/jquery-contextmenu/jquery.contextMenu.css') }}" rel="stylesheet" />
     <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('/assets/css/themes/all-themes.css') }}" rel="stylesheet" />
@@ -24,22 +25,30 @@
   <body class="{{ starts_with(Route::currentRouteName(),'auth')?'login-page':(starts_with(Route::currentRouteName(),'error')?'four-zero-four':'theme-red') }}">
     @yield('content')
     <script src="{{ asset('/assets/plugins/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/moment/min/moment.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.js') }}"></script>
     <script src="{{ asset('/assets/plugins/node-waves/waves.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-contextmenu/jquery.contextMenu.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-validation/jquery.validate.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-spinner/js/jquery.spinner.js') }}"></script>
+    <script src="{{ asset('/assets/plugins/jquery-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-datatable/jquery.dataTables.js') }}"></script>
     <script src="{{ asset('/assets/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js') }}"></script>
     <script src="{{ asset('/assets/js/simple.money.format.js') }}"></script>
     <script src="{{ asset('/assets/js/admin.js') }}"></script>
-    <script src="{{ asset('/assets/js/pages/examples/sign-in.js') }}"></script>
+    <script src="{{ asset('/assets/js/pages/examples/validation.js') }}"></script>
     <script type="text/javascript">
     $(document).ready(function() {
 
       var isContextInitated = false;
 
+      var dateFormat = {
+        format  : 'YYYY-MM-DD hh:mm:ss'
+      }
+
       $("input[name='item_price']").simpleMoneyFormat();
+      $("input[name='profile_open_po']").datetimepicker(dateFormat);
+      $("input[name='profile_close_po']").datetimepicker(dateFormat);
       $("input[name='item_price']").on('change blur',function(){
         if($(this).val().trim().length === 0){
           $(this).val('1,000');

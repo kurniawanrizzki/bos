@@ -35,6 +35,13 @@ Route::group ([
   Route::get('/signout',['as'=>'auth.signout','uses'=>'AuthController@signout']);
 
   Route::group([
+      'prefix' => 'profile'], function (){
+      Route::get('/',['as'=>'profile.index','uses'=>'DashboardController@profile']);
+      Route::get('/edit',['as'=>'profile.edit','uses'=>'DashboardController@edit']);
+      Route::post('/update',['as'=>'profile.update','uses'=>'DashboardController@update']);
+  });
+
+  Route::group([
       'prefix' => 'transaction'], function () {
 
       Route::get('/',['as'=>'transaction.index', 'uses'=>'TransactionController@index']);

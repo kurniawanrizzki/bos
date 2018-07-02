@@ -16,4 +16,5 @@ $(function () {
     };
     $('#sign_in').validate(validation);
     $('#item-form').validate(validation);
+    $('#profile-form').validate(validation);
 });

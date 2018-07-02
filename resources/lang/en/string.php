@@ -32,6 +32,10 @@ return [
     'password' => 'Password',
     'rememberme' => 'Remember Me'
   ],
+  'profile_title' => 'Profile',
+  'profile_edit' => 'Edit Profile',
+  'contacting_desc' => 'Please contact your <a href="#">Administrator</a> to change your credential.',
+  'user_detail_component'=>['NAME','ADDRESS','EMAIL','HP','PRE ORDER'],
   'unavailable' => 'UNAVAILABLE',
   'item_dashboard_tb_title' => 'Last '.\Config::get('app.limited_fetch_data').' Products',
   'item_tb_title' => 'Products List',
@@ -84,5 +88,7 @@ return [
   'error_default' => 'This page doesn\'t exist',
   'internal_error' => 'Internal Server Error',
   'not_allowed_method' => 'Method Not Allowed',
-  'goback' => 'Go to Home Page'
+  'goback' => 'Go to Home Page',
+  'open_po' => 'Open At',
+  'closed_po' => 'Close At'
 ];

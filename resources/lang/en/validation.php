@@ -7,9 +7,12 @@
       'required' => 'Fill your :attribute credential into this field'
     ],
     'item_validation_messages' => [
-      'required' => 'Fill :attribute product into this field.',
-      'numeric' => 'Fill :attribute product with only numeric.',
-      'unique' => 'Product :attribute for those value has been existed, Please fill it with another.'
+      'required' => 'Fill :attribute into this field.',
+      'numeric' => 'Fill :attribute with numeric only.',
+      'unique' => 'This :attribute for related value has been existed, Please fill it with another.',
+      'regex' => 'Format for :attribute doesn\'t correct.',
+      'email' => 'Fill :attribute with email only.',
+      'after' => 'First parameter doesn\'t allowed. It might be not less than another.'
     ]
   ]
 
