@@ -30,6 +30,9 @@
                             <div class="col-md-3">
                               {{ trans('string.user_detail_component')[0] }}
                             </div>
+                            <div class="col-md-8">
+                              {{ $user[0]->USER_NAME }}
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-3">
@@ -60,7 +63,7 @@
                               {{ trans('string.user_detail_component')[4] }}
                             </div>
                             <div class="col-md-8">
-                              {{ $user[0]->USER_OPEN_TIME.' - '.$user[0]->USER_CLOSE_TIME }}
+                              {{ $user[0]->USER_OPEN_TIME }}
                             </div>
                         </div>
                     </div>

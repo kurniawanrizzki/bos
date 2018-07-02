@@ -64,7 +64,6 @@ class DashboardController extends Controller
             $user->USER_EMAIL = $request->profile_email;
             $user->USER_HP = $request->profile_hp;
             $user->USER_OPEN_TIME = $request->profile_open_po;
-            $user->USER_CLOSE_TIME = $request->profile_close_po;
             $user->save();
 
             return redirect()->route('profile.index');
@@ -79,8 +78,7 @@ class DashboardController extends Controller
             "USER_EMAIL",
             "USER_HP",
             "USER_ADDRESS",
-            "USER_OPEN_TIME",
-            "USER_CLOSE_TIME"
+            "USER_OPEN_TIME"
             )
             ->where('USER_ID','=',$userId)
             ->get();

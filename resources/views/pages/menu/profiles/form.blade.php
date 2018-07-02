@@ -72,30 +72,18 @@
                                 </div>
                               </div>
                             </div>
-                            <h2 class="card-inside-title">{{ trans('string.user_detail_component')[4] }}</h2>
                             <div class="row">
-                                <div class="col-md-6">
-                                    {!! Form::label('item_size',trans('string.open_po'),['class'=>'form-label','style'=>'font-size:12px;color:#aaa;font-weight:normal']) !!}
-                                    @if(null !== $errors->first('profile_open_po'))
-                                    <span style="color:#F44336;font-size:12px;"> <strong>{{ $errors->first('profile_open_po') }}</strong> </span>
-                                    @endif
-                                    <div class="input-group" {{ (null !== $errors->first('profile_open_po')?'style=margin-top:10px;':'') }}>
-                                        <div class="form-line">
-                                            {!! Form::text('profile_open_po',null === old('profile_open_po')?$user[0]->USER_OPEN_TIME:old('profile_open_po'),['class'=>'form-control text-right','required']) !!}
-                                        </div>
+                              <div class="col-md-12">
+                                @if(null !== $errors->first('profile_open_po'))
+                                  <span style="color:#F44336;font-size:12px;"> <strong>{{ $errors->first('profile_open_po') }}</strong> </span>
+                                @endif
+                                <div class="form-group form-float" {{ (null !== $errors->first('profile_open_po')?'style=margin-top:10px;':'') }}>
+                                    <div class="form-line">
+                                        {!! Form::text('profile_open_po',null === old('profile_open_po')?$user[0]->USER_OPEN_TIME:old('profile_open_po'),['class'=>'form-control text-right','required']) !!}
+                                        {!! Form::label('profile_open_po',trans('string.open_po'),['class'=>'form-label','style'=>'font-size:12px;color:#aaa;font-weight:normal']) !!}
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    {!! Form::label('profile_close_po',trans('string.closed_po'),['class'=>'form-label','style'=>'font-size:12px;color:#aaa;font-weight:normal']) !!}
-                                    @if(null !== $errors->first('profile_close_po'))
-                                    <span style="color:#F44336;font-size:12px;"> <strong>{{ $errors->first('profile_close_po') }}</strong> </span>
-                                    @endif
-                                    <div class="input-group" {{ (null !== $errors->first('profile_close_po')?'style=margin-top:10px;':'') }}>
-                                        <div class="form-line">
-                                            {!! Form::text('profile_close_po',null === old('profile_close_po')?$user[0]->USER_CLOSE_TIME:old('profile_close_po'),['class'=>'form-control text-right','required']) !!}
-                                        </div>
-                                    </div>
-                                </div>
+                              </div>
                             </div>
                             <div class="row">
                             <div class="col-md-2">

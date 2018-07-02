@@ -146,7 +146,7 @@ return [
       'profile_hp'=>'required|regex:/[0-9]{9}/',
       'profile_address'=>'required',
       'profile_open_po'=>'required|date_format:Y-m-d H:i:s',
-      'profile_close_po'=>'required|date_format:Y-m-d H:i:s|after:profile_open_po',
+      // 'profile_close_po'=>'required|date_format:Y-m-d H:i:s|after:profile_open_po',
     ],
     /*
     |--------------------------------------------------------------------------
