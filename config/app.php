@@ -133,7 +133,7 @@ return [
       'token' => 'required'
     ],
     'item_rule' => [
-      'item_code' => 'required|unique:ITEM,ITEM_CODE',
+      'item_code' => 'required',
       'item_name' => 'required|unique:ITEM,ITEM_NAME',
       'item_desc' => 'required',
       'item_size' => 'required',

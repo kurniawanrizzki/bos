@@ -16,6 +16,9 @@
                     </div>
                     <div class="body">
                         <h2 class="card-inside-title">{{ trans('string.menuItems.item.title') }}</h2>
+                        @if(isset($error))
+                          <span style="color:#F44336;font-size:12px;"> <strong>{{ $error }}</strong> </span>
+                        @endif
                         {!! Form::open([
                           'method' => 'POST',
                           'route' => !isset($item)?'item.store':'item.update',

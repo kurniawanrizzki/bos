@@ -115,6 +115,7 @@
         responsive : true,
         processing : true,
         serverSide : true,
+        stateSave  : true,
         order      : [1,'asc'],
         ajax       : {
           type     : 'POST',
@@ -296,6 +297,7 @@
         responsive : true,
         processing : true,
         serverSide : true,
+        stateSave  : true,
         ajax       : {
           type     : 'POST',
           url      : "{{ route('api.items') }}",

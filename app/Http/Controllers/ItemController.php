@@ -43,6 +43,19 @@ class ItemController extends Controller
 
     public function store (Request $request) {
       $this->validate ($request,Config::get('app.item_rule'), Lang::get('validation.item_validation_messages'));
+
+      $id = Item::where('ITEM_CODE','=',$request->item_code)
+            ->where('ITEM_SIZE','=',$request->item_size)
+            ->select('ITEM_ID')->get()[0]->ITEM_ID;
+      
+      if ($id > 0) {
+        $find = Item::find($id);
+        return view('pages.menu.items.form',[
+          'item'=>$find,
+          'error' => Lang::get('validation.item_was_existed')
+          ]);
+      }
+
       $parameter = $this->buildRequestParameters($request);
       Item::insert($parameter);
       return redirect()->route('item.index');
@@ -50,7 +63,6 @@ class ItemController extends Controller
 
     public function update (Request $request) {
       $rules = Config::get('app.item_rule');
-      $rules['item_code'] = $rules['item_code'].",".$request->item_id.",ITEM_ID";
       $rules['item_name'] = $rules['item_name'].",".$request->item_id.",ITEM_ID";
       $this->validate ($request,$rules, Lang::get('validation.item_validation_messages'));
       $parameter = $this->buildRequestParameters($request);
