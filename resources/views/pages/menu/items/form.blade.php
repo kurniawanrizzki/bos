@@ -118,7 +118,7 @@
                                 @endif
                                 <div class="input-group spinner" data-trigger="spinner">
                                   <div class="form-line">
-                                      {!! Form::text('item_stock',isset($item)?$item->ITEM_STOCK:old('item_stock'),['class'=>'form-control text-right','data-rule'=>'quantity']) !!}
+                                      {!! Form::text('item_stock',isset($item)?$item->ITEM_STOCK:old('item_stock'),['class'=>'form-control text-right','data-rule'=>'quantity','data-min'=>'0']) !!}
                                   </div>
                                   <span class="input-group-addon">
                                       <a href="javascript:;" class="spin-up" data-spin="up"><i class="glyphicon glyphicon-chevron-up"></i></a>

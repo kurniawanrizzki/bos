@@ -44,11 +44,12 @@ class ItemController extends Controller
     public function store (Request $request) {
       $this->validate ($request,Config::get('app.item_rule'), Lang::get('validation.item_validation_messages'));
 
-      $id = Item::where('ITEM_CODE','=',$request->item_code)
+      $findItemSizeCode = Item::where('ITEM_CODE','=',$request->item_code)
             ->where('ITEM_SIZE','=',$request->item_size)
-            ->select('ITEM_ID')->get()[0]->ITEM_ID;
+            ->select('ITEM_ID')->get();
       
-      if ($id > 0) {
+      if ($findItemSizeCode->count() > 0) {
+        $id = $findItemSizeCode[0]->ITEM_ID;
         $find = Item::find($id);
         return view('pages.menu.items.form',[
           'item'=>$find,
