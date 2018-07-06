@@ -27,13 +27,23 @@ class TransactionController extends Controller
       ]);
     }
 
-    public function delete ($transactionId) {
-      $find = Transaction::where('TRANSACTION_ID','=',$transactionId);
-      if ($find->count() > 0) {
-        $find->delete();
-        Order::where('TRANSACTION_ID','=',$transactionId)->delete();
-        return redirect()->route('transaction.index');
+    public function delete (Request $request) {
+      $userId = $this->getUserId($request->_token);
+
+      if (null != $userId) {
+        $ids = $request->transactionIds;
+        foreach ($ids as $transactionId ) {
+          $find = Transaction::where('TRANSACTION_ID','=',$transactionId);
+          if ($find->count() > 0) {
+            $find->delete();
+            Order::where('TRANSACTION_ID','=',$transactionId)->delete();
+          }
+        }
+        return response()->json([
+          "status" => true
+        ]);
       }
+
       return abort(404);
     }
 

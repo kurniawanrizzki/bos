@@ -175,19 +175,25 @@
               var ids = buildTransactionIds();
               var warn = ids.warning;
               var url = "/dashboard/transaction/print?transactionIds="+JSON.stringify(ids.ids);
+              
+              $('#warning-details_toggle').hide();
+              $('#warning_details_collapse').collapse('hide');
+
               if (warn.length > 0) {
                 $('#printwarning_confirmation_modal_confirm').attr('href',url);
-                $('#warning_details_collapse_content').append(
+                $('#warning_details_collapse_content').html(
                   buildDetailWarningPrintContent(warn)
                 );
-                $('#printwarning_confirmation_modal_content').append("<br><br> <a class='waves-effect' data-toggle='collapse' href='#warning_details_collapse' aria-expanded='false' aria-controls='warningDetails'>Details</a>");
+                $('#warning-details_toggle').show();
                 $('#printwarning_confirmation_modal').modal('show');
                 return;
               }
+
               window.location.href = url;
+              
               break;
             case "remove":
-              setDeleteModalContent(transactionId, transactionNumber, "transaction");
+              setDeleteModalContent(null, null, "transaction");
               $('#delete_confirmation_modal').modal('show');
               break;
             default:
@@ -218,7 +224,10 @@
               return disablePrintSelection();
             }
           },
-          remove: {name:"Delete", icon:"fa-trash"},
+          remove: {name:"Delete", icon:"fa-trash", disabled:function(key,opt){
+              return disablePrintSelection();
+            }
+          },
           separator : "-",
           tools : {name:"Show / Hide Column", icon:"fa-columns", items:{
               transactionNumber  :{name:"TRANSACTION NUMBER",icon:"fa-file-o"},
@@ -354,17 +363,57 @@
 
       function setDeleteModalContent (dataId, dataName, dataType) {
         var url = null;
-
+        
         if ("item" == dataType) {
           url = '/dashboard/item/'+dataId+'/delete';
+          $.ajax({
+            type     : "POST",
+            url      : "{{ route('api.item_parent_checking') }}",
+            dataType : 'json',
+            data     : { _token:"{{ \Session::get('token') }}", item_id:dataId},
+            success  : function (e) {
+              var additionalInfo = "";
+
+              if (e.status) {
+                additionalInfo = "Probably there is / are transaction(s) that contained with data, ";
+              }
+
+              var title = additionalInfo+'Do you want to delete this <strong> '+dataName+' </strong> data?';
+
+              $('#delete_confirmation_modal_content').html(title);
+              $('#delete_confirmation_modal_confirm').show();
+              $('#delete_confirmation_modal_confirm').attr('href',url);
+            },
+            error    : function (e) {
+              $('#delete_confirmation_modal_content').html(e.statusText);
+              $('#delete_confirmation_modal_confirm').hide();
+            }
+          });
         } else if ("transaction" == dataType) {
-          url = '/dashboard/transaction/'+dataId+'/delete';
+
+          var ids = buildTransactionIds();
+          var title = 'Do you want to delete transaction data(s)?';
+
+          $('#delete_confirmation_modal_content').html(title);
+          $('#delete_confirmation_modal_confirm').on('click', function (){
+            $.ajax({
+              type : "POST",
+              url  : "{{ route('api.bulk_transaction_delete') }}",
+              dataType : "json",
+              data : {_token:"{{ \Session::get('token') }}", transactionIds:ids.ids},
+              success : function (e) {
+                $('#delete_confirmation_modal_confirm').hide();
+                if (e.status) {
+                  window.location.href = "{{ route('transaction.index') }}"
+                }
+              },
+              error : function (e) {
+                alert(e.statusText)
+                $('#delete_confirmation_modal_confirm').hide();
+              }
+            });
+          });
         }
-
-        var title = 'Do you want to delete this <strong> '+dataName+' </strong> data?';
-
-        $('#delete_confirmation_modal_content').html(title);
-        $('#delete_confirmation_modal_confirm').attr('href',url);
       }
 
       function getTransactionColumnIndex (index) {

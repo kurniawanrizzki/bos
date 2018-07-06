@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Models\Order;
 
 class ItemController extends Controller
 {
@@ -27,6 +28,32 @@ class ItemController extends Controller
         $item->delete();
         return redirect()->route('item.index');
       }
+      return abort(404);
+    }
+
+    public function didItemHaveChild (Request $request) {
+      $userId = $this->getUserId($request->_token);
+      $itemId = $request->item_id;
+      if (null != $userId) {
+        $item = Item::find($itemId);
+      
+        if ((null != $item) && ($item->count() > 0)) {
+          $order = Order::where("ITEM_ID","=",$item->ITEM_ID)->get();
+          if ((null != $order) && ($order->count() > 0)) {
+            return response()->json(
+              [
+                "status" => true,
+                "counted" => $order->count()
+              ]
+            );
+          }
+        }
+  
+        return response()->json([
+          "status" => false
+        ]);
+      }
+      
       return abort(404);
     }
 

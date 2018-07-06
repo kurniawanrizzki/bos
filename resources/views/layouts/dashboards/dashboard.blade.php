@@ -49,6 +49,7 @@
                     <div id="warning_details_collapse_content" class="well">
                     </div>
                 </div>
+                <br><br> <a id="warning-details_toggle" class='waves-effect' data-toggle='collapse' href='#warning_details_collapse' aria-expanded='false' aria-controls='warningDetails'>Details</a>
               </div>
               <div class="modal-footer">
                   <a class="btn btn-link waves-effect" id="printwarning_confirmation_modal_confirm">{{ trans('string.confirm_button') }}</a>
